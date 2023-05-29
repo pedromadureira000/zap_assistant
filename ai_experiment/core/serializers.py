@@ -85,6 +85,11 @@ class WebhookConversationSerializer(serializers.Serializer):
             conversation.messages.append({"role": "user", "content": user_txt_input})
             completion = get_chat_completion(conversation.messages, user)
             add_completion_to_conversation(conversation, completion)
+            send_completion_to_user( # TODO
+                user,
+                mega_api_instance_phone,
+                completion
+            )
             return conversation
         except Conversation.DoesNotExist:
             sentry_sdk.capture_message(

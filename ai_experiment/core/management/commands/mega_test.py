@@ -1,6 +1,5 @@
 from django.core.management.base import BaseCommand
 from django.conf import settings
-from django.shortcuts import resolve_url as r
 
 from ai_experiment.mega_api.models import MegaAPIInstance
 
@@ -10,8 +9,6 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         mega_test()
-
-#  r("core:webhook")
 
 def mega_test():
     try:

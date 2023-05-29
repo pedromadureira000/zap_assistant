@@ -7,7 +7,7 @@ from django.conf import settings
 from rest_framework import status, permissions
 from ai_experiment.core.constants import WEBHOOK_SERIALIZERS
 
-from ai_experiment.core.facade import add_completion_to_conversation, get_chat_completion, get_or_create_conversation_by_agent, get_transcription
+from ai_experiment.core.facade import add_completion_to_conversation, get_chat_completion, get_or_create_conversation_by_agent, get_transcription_with_in_memory_file
 from ai_experiment.core.serializers import ConversationalAgentSerializer, FileUploadSerializer, ChatCompletionSerializer
 
 
@@ -21,7 +21,7 @@ def audio_transcription(request):
     serializer = FileUploadSerializer(data=request.data)
     if serializer.is_valid():
         uploaded_file = serializer.validated_data['file']
-        transcription = get_transcription(uploaded_file)
+        transcription = get_transcription_with_in_memory_file(uploaded_file)
         return Response({'transcription': transcription})
     else:
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

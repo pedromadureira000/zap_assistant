@@ -12,3 +12,4 @@ requests
 python-magic
 openai-whisper
 openai
+pydub
