@@ -2,6 +2,7 @@ import logging
 import requests
 
 from django.db import models
+import sentry_sdk
 
 
 log = logging.getLogger("mega")
@@ -49,12 +50,10 @@ class MegaAPI:
             method, self.get_url(endpoint), headers=headers, **kwargs
         ).json()
 
-        #  if "error" in response:
-            #  message = response["error"]
-            #  if "You are already connected" not in message:
-                #  log.error(message)
-                #  raise MegaAPIException(message)
-
+        if response.get("error"):
+            message = response["error"]
+            log.error(message)
+            raise MegaAPIException(message)
         return response
 
 
@@ -83,8 +82,6 @@ class MegaAPIInstance(models.Model):
 
     def send_text_message(self, phone, message):
         mega = self._get_mega_instance()
-        #  Note that while sending to single chat, the id should not contain @s.whatsapp.net.
-        #  However, while sending to groups, the id should end with @g.us
         payload = {
             "messageData": {
                 "to": phone,
@@ -93,7 +90,6 @@ class MegaAPIInstance(models.Model):
         }
         return mega.request(
             "sendMessage/{instance_key}/text", method="POST", json=payload
-            #  "sendMessage/{instance_key}/text", method="POST", data=json.dumps(payload) XXX Also works
         )
 
     def pin_chat(self, to, option=True):
@@ -110,7 +106,6 @@ class MegaAPIInstance(models.Model):
         mega = self._get_mega_instance()
         return mega.request(
             "webhook/{instance_key}"
-            #  "webhook/{instance_key}/configWebhook"
         )
 
     def config_webhook(self, url, enable):

@@ -2,7 +2,7 @@ from django.conf import settings
 from rest_framework import serializers
 import magic
 import sentry_sdk
-from ai_experiment.core.facade import add_completion_to_conversation, get_chat_completion, get_conversation_by_instance_phone, get_user, get_user_text_input
+from ai_experiment.core.facade import add_completion_to_conversation, get_chat_completion, get_conversation_by_instance_phone, get_user, get_user_text_input, parse_txt_input, send_completion_to_user
 
 from ai_experiment.core.models import Conversation
 
@@ -81,11 +81,11 @@ class WebhookConversationSerializer(serializers.Serializer):
                 user, 
                 mega_api_instance_phone
             )
-            user_txt_input = get_user_text_input(message, conversation)
+            user_txt_input = parse_txt_input(get_user_text_input(message, conversation))
             conversation.messages.append({"role": "user", "content": user_txt_input})
             completion = get_chat_completion(conversation.messages, user)
             add_completion_to_conversation(conversation, completion)
-            send_completion_to_user( # TODO
+            send_completion_to_user(
                 user,
                 mega_api_instance_phone,
                 completion

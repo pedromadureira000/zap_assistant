@@ -4,6 +4,7 @@ import re
 import base64
 import io
 import wave
+import sentry_sdk
 
 import whisper
 import openai
@@ -52,12 +53,12 @@ def get_chat_completion(messages, user):
     messages_payload = [
         {"role": ord_dict["role"], "content": ord_dict["content"]} for ord_dict in messages
     ]
-
     openai.api_key = settings.OPENAI_API_KEY
     completion = openai.ChatCompletion.create(
         user=str(user.id),
         model="gpt-3.5-turbo",
         messages=messages_payload,
+        max_tokens=922
     )
     return completion.choices
 
@@ -89,6 +90,15 @@ def add_completion_to_conversation(conversation, completion):
 def get_user(phone):
     user_model = get_user_model()
     return user_model.objects.filter(whatsapp=phone).first()
+
+
+def parse_txt_input(txt_input):
+    if len(txt_input) > 4469:
+        sentry_sdk.capture_message(
+            f"Input text is too long: {len(txt_input)} characters"
+        )
+        return txt_input[:4469] + "..."
+    return txt_input
 
 
 def get_user_text_input(message, conversation):
@@ -131,3 +141,8 @@ def base64_to_file(base64_data):
     audio_segment.export(output_file, format='mp3')
     print(f"Audio file '{output_file}' has been created.")
     return output_file
+
+
+def send_completion_to_user(user, mega_api_instance_phone, completion):
+    mega_api_instance = MegaAPIInstance.objects.get(phone=mega_api_instance_phone)
+    mega_api_instance.send_text_message(user.whatsapp, completion)
