@@ -1,0 +1,16 @@
+# Django defaults
+SECRET_KEY='====mY_sEcReT_kEy===='
+DEBUG=True
+BASE_URL=http://localhost:8000
+ALLOWED_HOSTS=*
+
+DATABASE_URL=postgres://user:pass@localhost:5432/db_name
+
+CELERY_BROKER_URL=redis://127.0.0.1:6379
+
+OPENAI_API_KEY=
+
+LOCAL_TRANSCRIPTION=True
+
+MEGA_API_HOST_TEST=
+MEGA_API_INSTANCE_KEY_TEST=
