@@ -55,8 +55,7 @@ class WebhookConversationSerializer(serializers.Serializer):
     messageType = serializers.ChoiceField(
         choices=['conversation', 'extendedTextMessage', 'audioMessage']
     )
-    key = serializers.DictField(child=serializers.CharField())
-    messageTimestamp = serializers.DictField(child=serializers.IntegerField())
+    key = serializers.DictField()
     pushName = serializers.CharField()
     broadcast = serializers.BooleanField()
     message = serializers.DictField()
@@ -69,6 +68,23 @@ class WebhookConversationSerializer(serializers.Serializer):
             )
         return value
 
+    def validate(self, attrs):
+        user = get_user(attrs['key']['remoteJid'].split('@')[0])
+        mega_api_instance_phone = attrs['jid'].split(':')[0]
+        try:
+            conversation = get_conversation_by_instance_phone(
+                user, 
+                mega_api_instance_phone
+            )
+        except Conversation.DoesNotExist:
+            sentry_sdk.capture_message(
+                f"Phone number {user.whatsapp} has tried to send a message"
+                f" to {mega_api_instance_phone} without a conversation."
+            )
+            raise serializers.ValidationError("Conversation does not exist.")
+        attrs['conversation'] = conversation
+        return attrs
+
     def create(self, validated_data):
         remoteJid = validated_data['key']['remoteJid']
         phone = remoteJid.split('@')[0]
@@ -77,10 +93,7 @@ class WebhookConversationSerializer(serializers.Serializer):
         mega_api_instance_phone = jid.split(':')[0]
         message = validated_data['message']
         try:
-            conversation = get_conversation_by_instance_phone(
-                user, 
-                mega_api_instance_phone
-            )
+            conversation = validated_data['conversation']
             user_txt_input = parse_txt_input(get_user_text_input(message, conversation))
             conversation.messages.append({"role": "user", "content": user_txt_input})
             completion = get_chat_completion(conversation.messages, user)
@@ -91,11 +104,6 @@ class WebhookConversationSerializer(serializers.Serializer):
                 completion
             )
             return conversation
-        except Conversation.DoesNotExist:
-            sentry_sdk.capture_message(
-                f"Phone number {user.whatsapp} has tried to send a message"
-                f" to {mega_api_instance_phone} without a conversation."
-            )
         except Exception as err:
             sentry_sdk.capture_exception(err)
             raise err

@@ -62,7 +62,7 @@ class UserModelAdmin(admin.ModelAdmin):
     form = UserChangeForm
     add_form = UserCreationForm
     change_password_form = AdminPasswordChangeForm
-    list_display = ("name", "whatsapp", "is_staff")
+    list_display = ("id", "name", "whatsapp", "is_staff")
     list_filter = ("is_staff", "is_superuser", "is_active", "groups")
     search_fields = ("whatsapp", "name")
     ordering = ("created_at",)

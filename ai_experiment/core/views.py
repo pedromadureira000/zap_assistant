@@ -80,7 +80,9 @@ def conversational_agent(request, agent):
 
 @api_view(['POST', 'GET'])
 @permission_classes([permissions.AllowAny])
-def webhook(request):
+def webhook(request, webhook_id):
+    if str(webhook_id) != settings.WEBHOOK_ID:
+        return Response({'error': 'not authorized'}, status=status.HTTP_401_UNAUTHORIZED)
     if request.method == 'POST':
         message_type = request.data.get('messageType')
         if WEBHOOK_SERIALIZERS.get(message_type):

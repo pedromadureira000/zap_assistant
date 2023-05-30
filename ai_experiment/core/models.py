@@ -25,6 +25,9 @@ class Conversation(Base):
         null=True
     )
 
+    class Meta:
+        unique_together = (("user", "mega_instance"),)
+
     def save(self, *args, **kwargs):
         self.messages.append(
             {"role": "system", "content": self.agent.initial_instruction}

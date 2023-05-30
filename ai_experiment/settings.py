@@ -22,6 +22,8 @@ DEBUG = config("DEBUG", cast=bool)
 BASE_URL = config("BASE_URL", default="http://localhost:8000")
 ALLOWED_HOSTS = config("ALLOWED_HOSTS", default="*", cast=Csv())
 
+WEBHOOK_ID = config("WEBHOOK_ID")
+
 # Application definition
 
 INSTALLED_APPS = [

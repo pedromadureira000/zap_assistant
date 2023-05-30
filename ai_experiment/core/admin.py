@@ -5,16 +5,22 @@ from .models import Conversation, Agent
 
 @admin.register(Conversation)
 class ConversationAdmin(admin.ModelAdmin):
+    readonly_fields = [
+        'messages'
+    ]
     list_display = (
         'created_at',
         'updated_at',
         'id',
         'user',
         'agent',
-        'messages',
     )
     list_filter = ('created_at', 'updated_at', 'user', 'agent')
     date_hierarchy = 'created_at'
+
+    fieldsets = (
+        (None, {"fields": ("user", "agent", "mega_instance", "messages")}),
+    )
 
 
 @admin.register(Agent)
@@ -25,7 +31,6 @@ class AgentAdmin(admin.ModelAdmin):
         'id',
         'name',
         'description',
-        'initial_instruction',
     )
     list_filter = ('created_at', 'updated_at')
     search_fields = ('name',)

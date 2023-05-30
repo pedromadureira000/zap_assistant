@@ -22,6 +22,6 @@ class dayOfWeekChoices(models.TextChoices):
 
 WEBHOOK_SERIALIZERS = {
     "conversation": WebhookConversationSerializer,
-    "audioMessage": WebhookConversationSerializer,
     "extendedTextMessage": WebhookConversationSerializer,
+    "audioMessage": WebhookConversationSerializer,
 }

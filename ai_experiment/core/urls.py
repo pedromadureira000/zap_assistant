@@ -7,5 +7,5 @@ urlpatterns = [
     path("audio_transcription", audio_transcription, name="audio_transcription"),
     path("chat_completion", chat_completion, name="chat_completion"),
     path("conversational_agent/<str:agent>", conversational_agent, name="conversational_agent"),
-    path("webhook", webhook, name="webhook"),
+    path("webhook/<uuid:webhook_id>", webhook, name="webhook"),
 ]

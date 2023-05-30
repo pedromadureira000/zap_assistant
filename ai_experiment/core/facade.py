@@ -89,7 +89,7 @@ def add_completion_to_conversation(conversation, completion):
 
 def get_user(phone):
     user_model = get_user_model()
-    return user_model.objects.filter(whatsapp=phone).first()
+    return user_model.objects.get(whatsapp=phone)
 
 
 def parse_txt_input(txt_input):
