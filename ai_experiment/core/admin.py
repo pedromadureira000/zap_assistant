@@ -1,12 +1,16 @@
+import pprint
+
 from django.contrib import admin
 
 from .models import Conversation, Agent
+
+pp = pprint.PrettyPrinter(indent=4)
 
 
 @admin.register(Conversation)
 class ConversationAdmin(admin.ModelAdmin):
     readonly_fields = [
-        'messages'
+        'get_messages'
     ]
     list_display = (
         'created_at',
@@ -19,8 +23,11 @@ class ConversationAdmin(admin.ModelAdmin):
     date_hierarchy = 'created_at'
 
     fieldsets = (
-        (None, {"fields": ("user", "agent", "mega_instance", "messages")}),
+        (None, {"fields": ("user", "agent", "mega_instance", "get_messages")}),
     )
+
+    def get_messages(self, instance):
+        return pp.pformat(instance.messages)
 
 
 @admin.register(Agent)

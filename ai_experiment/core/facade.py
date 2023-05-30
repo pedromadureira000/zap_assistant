@@ -3,7 +3,6 @@ from datetime import datetime
 import re
 import base64
 import io
-import wave
 import sentry_sdk
 
 import whisper
@@ -45,6 +44,7 @@ def get_transcription_with_file_path(temporary_file_path):
         result = model.transcribe(temporary_file_path)
         return result["text"]
     audio_file= open(temporary_file_path, "rb")
+    openai.api_key = settings.OPENAI_API_KEY
     transcript = openai.Audio.transcribe("whisper-1", audio_file)
     return transcript["text"]
 
@@ -53,12 +53,15 @@ def get_chat_completion(messages, user):
     messages_payload = [
         {"role": ord_dict["role"], "content": ord_dict["content"]} for ord_dict in messages
     ]
+    if settings.OPENAI_API_MOCK:
+        return [{"message": {"role": "system", "content": "Mocked response"}}]
     openai.api_key = settings.OPENAI_API_KEY
     completion = openai.ChatCompletion.create(
         user=str(user.id),
         model="gpt-3.5-turbo",
         messages=messages_payload,
-        max_tokens=922
+        max_tokens=922,
+        #  request_id=request_id
     )
     return completion.choices
 
@@ -137,7 +140,7 @@ def base64_to_file(base64_data):
     audio_segment = AudioSegment.from_file(audio_file, format='ogg')
     file_name = "/tmp/temp_transcription_audio" + \
             datetime.now().strftime('%Y-%m-%d-%H%M%S')
-    output_file = f'{file_name}.mp3'  # Replace with the desired output file name
+    output_file = f'{file_name}.mp3'
     audio_segment.export(output_file, format='mp3')
     print(f"Audio file '{output_file}' has been created.")
     return output_file
@@ -145,4 +148,5 @@ def base64_to_file(base64_data):
 
 def send_completion_to_user(user, mega_api_instance_phone, completion):
     mega_api_instance = MegaAPIInstance.objects.get(phone=mega_api_instance_phone)
-    mega_api_instance.send_text_message(user.whatsapp, completion)
+    txt_msg = completion[0]["message"]["content"]
+    mega_api_instance.send_text_message(user.whatsapp, txt_msg)

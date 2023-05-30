@@ -1,0 +1,334 @@
+{
+	"info": {
+		"_postman_id": "196ad4d4-0ac0-440d-bcdb-7ddd5a0c7c8f",
+		"name": "zap assistant",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "webhook",
+			"item": [
+				{
+					"name": "webhook test",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://127.0.0.1:8000/webhook/94a160f3-77d0-4c70-9eec-459296161261",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"webhook",
+								"94a160f3-77d0-4c70-9eec-459296161261"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "webhook conversation",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"instance_key\": \"megastart-M1vrJ5b1p89\",\n  \"jid\": \"556293378753:6@s.whatsapp.net\",\n  \"messageType\": \"conversation\",\n  \"key\": {\n    \"remoteJid\": \"556281243394@s.whatsapp.net\",\n    \"fromMe\": false,\n    \"id\": \"3EB0BA1305496992ACA5A4\"\n  },\n  \"messageTimestamp\": 1685457855,\n  \"pushName\": \"Pedro Madureira\",\n  \"broadcast\": false,\n  \"status\": 2,\n  \"message\": {\n    \"conversation\": \"user's input\",\n    \"messageContextInfo\": {\n      \"deviceListMetadata\": {\n        \"senderKeyHash\": \"fIygpxDurT+43w==\",\n        \"senderTimestamp\": \"1685016893\",\n        \"recipientKeyHash\": \"5den3pUy7QIOCA==\",\n        \"recipientTimestamp\": \"1682519934\"\n      },\n      \"deviceListMetadataVersion\": 2\n    }\n  }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8000/webhook/94a160f3-77d0-4c70-9eec-459296161261",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"webhook",
+								"94a160f3-77d0-4c70-9eec-459296161261"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "webhook extendedTextMessage",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"instance_key\": \"megastart-M1vrJ5b1p89\",\n  \"jid\": \"556293378753:6@s.whatsapp.net\",\n  \"messageType\": \"extendedTextMessage\",\n  \"key\": {\n    \"remoteJid\": \"556281243394@s.whatsapp.net\",\n    \"fromMe\": false,\n    \"id\": \"3EB061106B6F391767019E\"\n  },\n  \"messageTimestamp\": 1685459055,\n  \"pushName\": \"Pedro Madureira\",\n  \"broadcast\": false,\n  \"message\": {\n    \"extendedTextMessage\": {\n      \"text\": \"hi there!\",\n      \"contextInfo\": {\n        \"ephemeralSettingTimestamp\": \"1685249376\",\n        \"disappearingMode\": {\n          \"initiator\": \"CHANGED_IN_CHAT\"\n        }\n      },\n      \"inviteLinkGroupTypeV2\": \"DEFAULT\"\n    },\n    \"messageContextInfo\": {\n      \"deviceListMetadata\": {\n        \"senderKeyHash\": \"LqV6cwxGm8m80A==\",\n        \"senderTimestamp\": \"1684951673\",\n        \"recipientKeyHash\": \"fIygpxDurT+43w==\",\n        \"recipientTimestamp\": \"1685016893\"\n      },\n      \"deviceListMetadataVersion\": 2\n    }\n  }\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8000/webhook/94a160f3-77d0-4c70-9eec-459296161261",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"webhook",
+								"94a160f3-77d0-4c70-9eec-459296161261"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "webhook audioMessage",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"instance_key\": \"megastart-M1vrJ5b1p89\",\n  \"jid\": \"556293378753:6@s.whatsapp.net\",\n  \"messageType\": \"audioMessage\",\n  \"key\": {\n    \"remoteJid\": \"556281243394@s.whatsapp.net\",\n    \"fromMe\": false,\n    \"id\": \"8AFC01E0F2914D8BBF889DB91C37F65D\"\n  },\n  \"messageTimestamp\": 1685457821,\n  \"pushName\": \"Pedro Madureira\",\n  \"broadcast\": false,\n  \"message\": {\n    \"audioMessage\": {\n      \"url\": \"https://mmg.whatsapp.net/v/t62.7117-24/30694664_271134012054427_6941480682575092211_n.enc?ccb=11-4&oh=01_AdTrVFdHiZ1U5zfSOCYxV2-LkL_I8zNRj_XhpvPR3ejwPg&oe=649D6271&mms3=true\",\n      \"mimetype\": \"audio/ogg; codecs=opus\",\n      \"fileSha256\": \"UZ0nui1J9Ulo6On8kYkX3edOmGps52dlYlep5CqZMmQ=\",\n      \"fileLength\": \"34474\",\n      \"seconds\": 16,\n      \"ptt\": true,\n      \"mediaKey\": \"RFU25vawdISrumCT8seMU5oz0hqbeqvbjrGAmcsWk5Q=\",\n      \"fileEncSha256\": \"Q+znaJZklWIXr6ZZtxGpOef90nsfA7vrjrizjOAQom4=\",\n      \"directPath\": \"/v/t62.7117-24/30694664_271134012054427_6941480682575092211_n.enc?ccb=11-4&oh=01_AdTrVFdHiZ1U5zfSOCYxV2-LkL_I8zNRj_XhpvPR3ejwPg&oe=649D6271\",\n      \"mediaKeyTimestamp\": \"1685457806\",\n      \"waveform\": \"AAAAKScCHhsTGQAVBRYNEwQAAAAAACECFBYGAAAAAAANFwgXDAYNFwIAAA4TDQQACgABBgkLCAAREgcOAAAAAA==\"\n    },\n    \"messageContextInfo\": {\n      \"deviceListMetadata\": {\n        \"senderKeyHash\": \"LqV6cwxGm8m80A==\",\n        \"senderTimestamp\": \"1684951673\",\n        \"recipientKeyHash\": \"fIygpxDurT+43w==\",\n        \"recipientTimestamp\": \"1685016893\"\n      },\n      \"deviceListMetadataVersion\": 2\n    }\n  }\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8000/webhook/94a160f3-77d0-4c70-9eec-459296161261",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"webhook",
+								"94a160f3-77d0-4c70-9eec-459296161261"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "gettoken",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Token 6268afcb20faa3f17dd20e51be2d2ddd77081528",
+						"type": "default",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"password\": \"asdf\",\n    \"whatsapp\": \"5562999999999\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/user/gettoken",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"user",
+						"gettoken"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "audio_transcription",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Token b9fcaa068e73b2de37e3f5cf5f827ebb594bffdd",
+						"type": "default"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "file",
+							"type": "file",
+							"src": "/home/phsw/Downloads/audio.mp3"
+						}
+					],
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/audio_transcription",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"audio_transcription"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "chat_completion",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Token 7952c4c175eb02ba6b6435ca97be4f7e251953f1",
+						"type": "default"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"messages\": [\n        {\"role\": \"system\", \"content\": \"You are a helpful assistant.\"},\n        {\"role\": \"user\", \"content\": \"Who won the world series in 2020?\"},\n        {\"role\": \"assistant\", \"content\": \"The Los Angeles Dodgers won the World Series in 2020.\"},\n        {\"role\": \"user\", \"content\": \"Where was it played?\"}\n    ]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/chat_completion",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"chat_completion"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "conversational_agent POST",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Token bd9b5b3a0e2d09575a78ec89b27dd1df0790da4a",
+						"type": "default"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"user_input\": \"If is my mom angry at me but because of a silly reason should I even bother to talk with her? I don't even live with my parents anymore, I think I should not care about those things anymore. \"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/conversational_agent/nice_agent",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"conversational_agent",
+						"nice_agent"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "conversational_agent GET",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Token bd9b5b3a0e2d09575a78ec89b27dd1df0790da4a",
+						"type": "default"
+					}
+				],
+				"url": {
+					"raw": "http://127.0.0.1:8000/conversational_agent/nice_agent",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"conversational_agent",
+						"nice_agent"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

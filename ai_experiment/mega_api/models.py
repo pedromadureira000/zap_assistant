@@ -48,13 +48,17 @@ class MegaAPI:
         }
         response = requests.request(
             method, self.get_url(endpoint), headers=headers, **kwargs
-        ).json()
-
-        if response.get("error"):
-            message = response["error"]
-            log.error(message)
-            raise MegaAPIException(message)
-        return response
+        )
+        if response.status_code != 200:
+            try:
+                response_json = response.json()
+                error_msg = response_json.get("message", "Erro desconhecido")
+            except Exception:
+                error_msg = "Erro desconhecido"
+            log.error(error_msg)
+            raise MegaAPIException(error_msg)
+        response_json = response.json()
+        return response_json
 
 
 class MegaAPIInstance(models.Model):
@@ -88,9 +92,10 @@ class MegaAPIInstance(models.Model):
                 "text": message,
             }
         }
-        return mega.request(
+        response = mega.request(
             "sendMessage/{instance_key}/text", method="POST", json=payload
         )
+        return response
 
     def pin_chat(self, to, option=True):
         mega = self._get_mega_instance()

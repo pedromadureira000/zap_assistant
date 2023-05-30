@@ -166,6 +166,8 @@ SEND_CHECKIN_LINK__DEFAULT_RETRY_DELAY = config(
 
 OPENAI_API_KEY = config("OPENAI_API_KEY")
 
+OPENAI_API_MOCK= config("OPENAI_API_MOCK", cast=bool, default=True)
+
 LOCAL_TRANSCRIPTION = config("LOCAL_TRANSCRIPTION", cast=bool, default=True)
 
 # Mega API
