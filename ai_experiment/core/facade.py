@@ -5,7 +5,6 @@ import base64
 import io
 import sentry_sdk
 
-import whisper
 import openai
 from django.conf import settings
 from django.contrib.auth import get_user_model
@@ -40,6 +39,7 @@ def get_transcription_with_in_memory_file(in_memory_file):
 
 def get_transcription_with_file_path(temporary_file_path):
     if settings.LOCAL_TRANSCRIPTION:
+        import whisper
         model = whisper.load_model("small")
         result = model.transcribe(temporary_file_path)
         return result["text"]

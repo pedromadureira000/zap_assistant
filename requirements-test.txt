@@ -7,3 +7,4 @@ pytest-mock
 requests-mock
 responses
 ipython
+openai-whisper

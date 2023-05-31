@@ -113,9 +113,40 @@ git clone git@github-zap-ec2:pedromadureira000/zap_assistant.git
 sudo yum nginx
 ```
 
-# Other packages
+# Other configs
+* enable epel
+```
+$ wget https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
+$ sudo rpm -ihv --nodeps ./epel-release-latest-8.noarch.rpm
+sudo yum -y install epel-release
+```
+* Install neovim
+```
+curl -o /etc/yum.repos.d/dperson-neovim-epel-7.repo https://copr.fedorainfracloud.org/coprs/dperson/neovim/repo/epel-7/dperson-neovim-epel-7.repo 
+sudo yum -y install neovim
+```
+* Install other packages
 ```
 sudo yum install curl --skip-broken
+```
+* copy .bashrc configs
+```
+# Aliases
+alias vim='nvim'
+alias la='ls -A'
+alias du='du -h --max-depth=1'
+alias grep='grep --color=auto'
+alias ..='cd ..'
+alias gc='git commit -m'
+alias gC='git checkout'
+alias gp='git push'
+alias ga='git add'
+alias gs='git status'
+alias gd='git diff'
+alias gl='git log --graph --abbrev-commit'
+alias gb='git branch'
+alias journal='journalctl -e'
+alias used_space='sudo du -h --max-depth=1 | sort -h'
 ```
 
 # Run Postgres
@@ -134,10 +165,11 @@ postgres=# \q
 # Initial project settings
 ```
 cd zap_assistant
-python -m venv .venv
+python3.11 -m venv .venv
 source .venv/bin/activate
-pip install -r requirements-test.txt
+pip install --upgrade pip
+pip install -r requirements.txt
 cp contrib/env-sample .env
-python manage.py migrate
-python manage.py createsuperuser
+python3.11 manage.py migrate
+python3.11 manage.py createsuperuser
 ```
