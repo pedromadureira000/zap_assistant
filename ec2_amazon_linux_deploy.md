@@ -173,3 +173,169 @@ cp contrib/env-sample .env
 python3.11 manage.py migrate
 python3.11 manage.py createsuperuser
 ```
+
+<!-- # Nginx configuration -->
+<!-- * Install pytohn 3.6 -->
+<!-- ``` -->
+<!-- sudo curl https://www.python.org/ftp/python/3.6.1/Python-3.6.1.tgz -O -->
+<!-- tar -xvf Python-3.6.1.tgz -->
+<!-- cd Python-3.6.1 -->
+<!-- sudo ./configure --enable-optimizations -->
+<!-- sudo make install -->
+<!-- ``` -->
+<!-- * install supervisor -->
+<!-- ``` -->
+<!-- sudo yum -y install supervisor --skip-broken -->
+<!-- supervisorctl -->
+<!-- ``` -->
+
+Create systemd socket for Gunicorn
+-----------------------------------------
+
+* Create the file with:
+
+```
+sudo vim /etc/systemd/system/gunicorn.socket
+```
+
+* Then copy this to that file
+
+```
+[Unit]
+Description=gunicorn socket
+
+[Socket]
+ListenStream=/run/gunicorn.sock
+
+[Install]
+WantedBy=sockets.target
+```
+
+Create systemd service for Gunicorn
+-----------------------------------------
+
+* Create the file with:
+
+```
+sudo vim /etc/systemd/system/gunicorn.service
+```
+
+* Then copy this to that file and edit the user field and working directory path
+
+```
+[Unit]
+Description=gunicorn daemon
+Requires=gunicorn.socket
+After=network.target
+
+[Service]
+User=ec2-user
+Group=ec2-user
+WorkingDirectory=/home/ec2-user/zap_assistant
+ExecStart=/home/ec2-user/zap_assistant/.venv/bin/gunicorn --access-logfile - --workers 3 --bind unix:/run/gunicorn.sock ai_experiment.wsgi:application
+
+[Install]
+WantedBy=multi-user.target
+```
+
+Start and enable the Gunicorn socket
+-----------------------------------------
+
+```
+sudo systemctl start gunicorn.socket
+sudo systemctl enable gunicorn.socket
+sudo systemctl status gunicorn.socket
+```
+
+Check the Gunicorn socket’s logs 
+-----------------------------------------
+
+```
+sudo journalctl -u gunicorn.socket
+```
+
+Test socket activation
+-----------------------------------------
+
+It will be dead. The gunicorn.service will not be active yet since the socket has not yet received any connections
+
+```
+sudo systemctl status gunicorn  
+```
+
+Test the socket activation
+-----------------------------------------
+
+It must return a html response
+
+```
+curl --unix-socket /run/gunicorn.sock localhost 
+```
+
+If you don't receive a html, check the logs. Check your /etc/systemd/system/gunicorn.service file for problems. If you make changes to the /etc/systemd/system/gunicorn.service file, reload the daemon to reread the service definition and restart the Gunicorn process:
+-----------------------------------------
+
+```
+sudo journalctl -u gunicorn
+sudo systemctl daemon-reload
+sudo systemctl restart gunicorn
+sudo systemctl status gunicorn
+```
+
+Configure Nginx to Proxy Pass to Gunicorn
+-----------------------------------------
+
+* Create the file
+
+```
+cd /etc/nginx/conf.d
+sudo nvim zap_assistant
+```
+
+* Paste the nginx configuration code, and edit the sever name with your server IP.
+
+```
+server {
+        listen 80;
+        # Above is the server IP
+        server_name <your server ip>;
+
+        location = /favicon.ico { access_log off; log_not_found off; }
+
+        location / {
+                # Bellow, the proxy_params
+                proxy_set_header Host $http_host;
+                proxy_set_header X-Real-IP $remote_addr;
+                proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                proxy_set_header X-Forwarded-Proto $scheme;
+                proxy_pass http://unix:/run/gunicorn.sock;
+        }
+}
+```
+
+Test for syntax errors
+-----------------------------------------
+
+```
+sudo nginx -t
+```
+
+Restart nginx
+-----------------------------------------
+
+```
+sudo systemctl restart nginx
+sudo systemctl status nginx
+```
+
+Solving common errors
+----------------------------------------
+* Securit group
+ - Add port 80 there
+* ALLOWED_HOSTS (better set '\*' )
+* Nginx Is Displaying a 502 Bad Gateway Error Instead of the Django Application
+  - A 502 error indicates that Nginx is unable to successfully proxy the request. A wide range of configuration problems express themselves with a 502 error, so more information is required to troubleshoot properly.
+  - The primary place to look for more information is in Nginx’s error logs. Generally, this will tell you what conditions caused problems during the proxying event. Follow the Nginx error logs by typing:
+  ```
+  sudo tail -F /var/log/nginx/error.log
+  ```
