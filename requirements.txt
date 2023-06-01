@@ -1,6 +1,7 @@
 Django
 djangorestframework
 celery[redis]
+gevent
 dj-database-url
 python-decouple
 django-celery-beat

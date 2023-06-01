@@ -4,8 +4,6 @@ from django.shortcuts import resolve_url as r
 from django.utils import timezone
 import sentry_sdk
 
-from ai_experiment.zapi.models import ZApiInstance
-
 
 #  @shared_task(bind=True)
 #  def send_checkin_link(self, phone_number, link_id):
