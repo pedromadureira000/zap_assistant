@@ -288,8 +288,8 @@ Configure Nginx to Proxy Pass to Gunicorn
 * Create the file
 
 ```
-cd /etc/nginx/conf.d
-sudo nvim zap_assistant
+sudo nvim /etc/nginx/conf.d/file_name.conf
+<!-- sudo nvim /etc/nginx/conf.d/sameple.com.conf -->
 ```
 
 * Paste the nginx configuration code, and edit the sever name with your server IP.
@@ -302,6 +302,10 @@ server {
 
         location = /favicon.ico { access_log off; log_not_found off; }
 
+        location /static/ {
+            root /home/ec2-user/zap_assistant/staticfiles;
+        }
+
         location / {
                 # Bellow, the proxy_params
                 proxy_set_header Host $http_host;
@@ -310,7 +314,30 @@ server {
                 proxy_set_header X-Forwarded-Proto $scheme;
                 proxy_pass http://unix:/run/gunicorn.sock;
         }
+
+        location /static/ {
+		    autoindex on;
+		    alias /home/ec2-user/zap_assistant/staticfiles/;
+	    }
 }
+```
+
+collectstatic
+-----------------------------------------
+```
+manage.py collectstatic
+```
+
+Nginx serve static file and got 403 forbidden Problem
+-----------------------------------------
+* add permission (first try)
+```
+sudo chown -R :nginx /home/ec2-user/zap_assistant/staticfiles
+```
+* add permission (second try)
+```
+sudo usermod -a -G ec2-user nginx  # (adds the user "nginx" to the "ec2-user" group without removing them from their existing groups)
+chmod 710 /home/ec2-user 
 ```
 
 Test for syntax errors
@@ -325,6 +352,7 @@ Restart nginx
 
 ```
 sudo systemctl restart nginx
+sudo systemctl reload nginx
 sudo systemctl status nginx
 ```
 
