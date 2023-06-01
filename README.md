@@ -14,7 +14,7 @@ python manage.py createsuperuser
 
 ## Running celery
 ```
-celery -A ai_experiment worker -l INFO --pool=gevent --concurrency=8 --hostname=worker -E
+celery -A ai_experiment worker -l INFO --pool=gevent --concurrency=8 --hostname=worker -E --queues=send_completion_to_user
 ```
 
 ## Header Authentication

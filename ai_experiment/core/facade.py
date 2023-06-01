@@ -100,7 +100,7 @@ def get_user(phone):
     return user_model.objects.get(whatsapp=phone)
 
 
-def parse_txt_input(txt_input):
+def parse_user_txt_input(txt_input):
     if len(txt_input) > 4469:
         sentry_sdk.capture_message(
             f"Input text is too long: {len(txt_input)} characters"
@@ -160,7 +160,7 @@ def get_msg_from_json_completion(json_string):
         return json_string # TODO Heuristic or try to parse with openai
 
 
-def send_completion_to_user(user, mega_api_instance_phone, completion):
+def send_completion_to_user_with_mega_api(user, mega_api_instance_phone, completion):
     mega_api_instance = MegaAPIInstance.objects.get(phone=mega_api_instance_phone)
     json_string = completion[0]["message"]["content"]
     txt_msg = get_msg_from_json_completion(json_string)

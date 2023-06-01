@@ -29,7 +29,7 @@ class Conversation(Base):
         unique_together = (("user", "mega_instance"),)
 
     def save(self, *args, **kwargs):
-        if not self.pk:
+        if not self.pk or not self.messages:
             self.messages.append(
                 {"role": "system", "content": self.agent.initial_instruction}
             )

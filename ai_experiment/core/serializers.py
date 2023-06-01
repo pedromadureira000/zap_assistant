@@ -1,11 +1,11 @@
-from django.db import transaction
 from rest_framework import serializers
 import magic
 import sentry_sdk
 
-from ai_experiment.core.facade import add_completion_to_conversation, get_chat_completion, get_conversation_by_instance_phone, get_user, get_user_text_input, parse_txt_input, send_completion_to_user
+from ai_experiment.core.facade import get_conversation_by_instance_phone, get_user, get_user_text_input, parse_user_txt_input
 
 from ai_experiment.core.models import Conversation
+from ai_experiment.core.tasks import get_completion_and_send_to_user
 
 class FileUploadSerializer(serializers.Serializer):
     file = serializers.FileField()
@@ -94,18 +94,17 @@ class WebhookConversationSerializer(serializers.Serializer):
         mega_api_instance_phone = jid.split(':')[0]
         message = validated_data['message']
         try:
-            with transaction.atomic():
-                conversation = validated_data['conversation']
-                user_txt_input = parse_txt_input(get_user_text_input(message, conversation))
-                conversation.messages.append({"role": "user", "content": user_txt_input})
-                completion = get_chat_completion(conversation.messages, user) # XXX API error prone
-                add_completion_to_conversation(conversation, completion)
-                send_completion_to_user( # XXX API error prone (and depend of previous calls)
-                    user,
-                    mega_api_instance_phone,
-                    completion
-                )
-                return conversation
+            conversation = validated_data['conversation']
+            user_txt_input = parse_user_txt_input(
+                get_user_text_input(message, conversation)
+            )
+            get_completion_and_send_to_user.delay(
+                user.id,
+                user_txt_input,
+                conversation.id,
+                mega_api_instance_phone
+            )
+            return conversation
         except Exception as err:
             sentry_sdk.capture_exception(err)
             raise err
