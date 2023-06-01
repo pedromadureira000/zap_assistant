@@ -25,3 +25,14 @@ WEBHOOK_SERIALIZERS = {
     "extendedTextMessage": WebhookConversationSerializer,
     "audioMessage": WebhookConversationSerializer,
 }
+
+
+JSON_FORMAT_INSTRUCTION = "Do not include any explanations, only provide a RFC8259 compliant" + \
+" JSON response following this format without deviation:" + \
+"""
+```json
+{
+"completion": "Your generated text completion",
+}
+```
+"""
