@@ -61,6 +61,7 @@ def get_chat_completion(messages, user):
         model="gpt-3.5-turbo",
         messages=messages_payload,
         max_tokens=922,
+        temperature=0.7 # detaul is 1
         #  request_id=request_id
     )
     return completion.choices
