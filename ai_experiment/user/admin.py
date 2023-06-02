@@ -55,7 +55,7 @@ class UserModelAdmin(admin.ModelAdmin):
             None,
             {
                 "classes": ("wide",),
-                "fields": ("whatsapp", "password1", "password2"),
+                "fields": ("name", "whatsapp", "password1", "password2"),
             },
         ),
     )

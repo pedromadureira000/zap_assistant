@@ -413,9 +413,114 @@ ln -s /usr/local/bin/ffmpeg/ffmpeg /usr/bin/ffmpeg
 ln -s /usr/local/bin/ffmpeg/ffprobe /usr/bin/ffprobe
 ```
 
+Run redis
+-----------------------------------------
+## Manually
+```
+sudo docker ps -a
+sudo docker start 61 # if 61 is the redis id
+```
+## Daemonizing Redis container
+1. `sudo vim /etc/systemd/system/redis.service`
+```
+[Unit]
+Description=Redis container
+Requires=docker.service
+After=docker.service
+
+[Service]
+Restart=always
+ExecStart=/usr/bin/docker start -a zap_assistant-redis-1
+
+[Install]
+WantedBy=default.target
+```
+
+2. Reload it
+```
+sudo systemctl daemon-reload
+```
+
+3. Enable and start the Redis service:
+```
+sudo systemctl enable redis
+sudo systemctl start redis
+```
+4. check it
+```
+sudo systemctl status redis
+```
+
 Run celery
 -----------------------------------------
-* Just run it manualy
+## Just run it manualy
 ```
 celery -A ai_experiment worker -l INFO --pool=gevent --concurrency=8 --hostname=worker -E --queues=send_completion_to_user &
+```
+
+## Daemonizing Celery with systemd
+https://ahmadalsajid.medium.com/daemonizing-celery-beat-with-systemd-97f1203e7b32
+
+1. We will create a /etc/default/celeryd configuration file.
+* `sudo nvim /etc/default/celeryd`
+```
+# The names of the workers. This example create one worker
+CELERYD_NODES="worker1"
+
+# The name of the Celery App, should be the same as the python file
+# where the Celery tasks are defined
+CELERY_APP="ai_experiment"
+
+# Log and PID directories
+CELERYD_LOG_FILE="/var/log/celery/%n%I.log"
+CELERYD_PID_FILE="/var/run/celery/%n.pid"
+
+# Log level
+CELERYD_LOG_LEVEL=INFO
+
+# Path to celery binary, that is in your virtual environment
+CELERY_BIN=/home/ec2-user/zap_assistant/.venv/bin/celery
+```
+
+2. Now, create another file for the worker 
+* `sudo nvim /etc/systemd/system/celeryd.service` with sudo privilege.
+```
+[Unit]
+Description=Celery Service
+After=network.target
+
+[Service]
+Type=forking
+User=ec2-user
+Group=ec2-user
+WorkingDirectory=/home/ec2-user/zap_assistant
+ExecStart=/home/ec2-user/zap_assistant/.venv/bin/celery -A ai_experiment worker -l INFO --pool=gevent --concurrency=8 --hostname=worker -E --queues=send_completion_to_user
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+```
+
+<!-- 3. Now, we will create log and pid directories. -->
+<!-- ``` -->
+<!-- sudo mkdir /var/log/celery /var/run/celery -->
+<!-- sudo chown ec2-user:ec2-user /var/log/celery /var/run/celery  -->
+<!-- ``` -->
+
+4. After that, we need to reload systemctl daemon. Remember that, we should reload this every time we make any change to the service definition file.
+```
+sudo systemctl daemon-reload
+sudo systemctl restart celeryd
+```
+
+5.  To enable the service to start at boot, we will run. And start the service
+```
+sudo systemctl enable celeryd
+sudo systemctl start celeryd
+sudo systemctl status celeryd
+```
+
+6. To verify that everything is ok, we can check the log files
+```
+cat /var/log/celery/worker1.log
 ```
