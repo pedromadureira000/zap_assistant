@@ -13,7 +13,7 @@ from pydub import AudioSegment
 
 from ai_experiment.core.models import Conversation
 from ai_experiment.mega_api.models import MegaAPIInstance
-from ai_experiment.core import constants
+#  from ai_experiment.core import constants
 #  import sentry_sdk
 
 
@@ -51,21 +51,22 @@ def get_transcription_with_file_path(temporary_file_path):
     return transcript["text"]
 
 
-def get_chat_completion(messages, user):
+def get_chat_completion(messages, user, system_instruction):
     if settings.OPENAI_API_MOCK:
         return [{"message": {"role": "assistant", "content": "Mocked response"}}]
     messages_payload = [
         {"role": ord_dict["role"], "content": ord_dict["content"]} for ord_dict in messages
     ]
     messages_payload = messages_payload[-10:] # XXX Memory is limited to last 10
-    messages_payload.insert(-1, ({"role": "system", "content": constants.JSON_FORMAT_INSTRUCTION}))
+    messages_payload.insert(-1, ({"role": "system", "content": system_instruction}))
+    print('========================> messages_payload: ',messages_payload )
     openai.api_key = settings.OPENAI_API_KEY
     completion = openai.ChatCompletion.create(
         user=str(user.id),
         model="gpt-3.5-turbo",
         messages=messages_payload,
         max_tokens=922,
-        temperature=0.7 # default is 1
+        #  temperature=0.7 # default is 1
         #  request_id=request_id
     )
     return completion.choices
@@ -157,11 +158,13 @@ def get_msg_from_json_completion(json_string):
         return completion_dict["completion"]
     except Exception as e:
         sentry_sdk.capture_message(f"Error parsing json {json_string};  Error: {e}")
+        print('========================> 😭😭😭😭: ',json_string[0:10] )
         return json_string # TODO Heuristic or try to parse with openai
 
 
 def send_completion_to_user_with_mega_api(user, mega_api_instance_phone, completion):
     mega_api_instance = MegaAPIInstance.objects.get(phone=mega_api_instance_phone)
     json_string = completion[0]["message"]["content"]
-    txt_msg = get_msg_from_json_completion(json_string)
+    #  txt_msg = get_msg_from_json_completion(json_string) # XXX not working consistently
+    txt_msg = json_string
     mega_api_instance.send_text_message(user.whatsapp, txt_msg)

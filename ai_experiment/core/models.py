@@ -5,6 +5,8 @@ from django.utils import timezone
 from django.contrib.postgres.fields import ArrayField
 
 
+JSON_FORMAT_INSTRUCTION =  "You will always answer as JSON, following this format without deviation: `{\"completion\": \"Your generated text completion\"}`. For example: [{'role': 'user', 'content': 'Has man ever been to the moon? For real?'},{'role': 'assistant', 'content': '{\"completion\": \"Yes, man has actually been to the moon! The Apollo 11 mission landed on the moon on July 20, 1969. It was a historic achievement for humanity and a significant milestone in space exploration. 🚀🌕\"}'}]"
+
 class Base(models.Model):
     created_at = models.DateTimeField("Criado em", default=timezone.now)
     updated_at = models.DateTimeField("Alterado em", auto_now=True)
@@ -24,15 +26,16 @@ class Conversation(Base):
         blank=True,
         null=True
     )
+    system_instruction = models.TextField("system instruction", blank=True)
 
     class Meta:
         unique_together = (("user", "mega_instance"),)
 
     def save(self, *args, **kwargs):
         if not self.pk or not self.messages:
-            self.messages.append(
-                {"role": "system", "content": self.agent.initial_instruction}
-            )
+            self.system_instruction = self.agent.initial_instruction + \
+                ''
+                #  JSON_FORMAT_INSTRUCTION
         super(Conversation, self).save(*args, **kwargs)
 
 

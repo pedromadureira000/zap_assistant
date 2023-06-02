@@ -34,8 +34,9 @@ def chat_completion(request):
     serializer = ChatCompletionSerializer(data=request.data)
     if serializer.is_valid():
         messages = serializer.validated_data['messages']
+        system_instruction = serializer.validated_data['system_instruction']
         try:
-            completion = get_chat_completion(messages, request.user)
+            completion = get_chat_completion(messages, request.user, system_instruction)
             return Response({'completion': completion})
         except Exception as er:
             err_msg = str(er) if settings.DEBUG else 'something went wrong'

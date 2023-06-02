@@ -35,6 +35,7 @@ class MessagesSerializer(serializers.Serializer):
 
 class ChatCompletionSerializer(serializers.Serializer):
     messages = MessagesSerializer(many=True)
+    system_instruction = serializers.CharField()
 
 
 class ConversationalAgentSerializer(serializers.Serializer):
