@@ -144,7 +144,7 @@ def base64_to_file(base64_data):
     audio_data = base64.b64decode(sanitize_base64_string(base64_data))
     audio_file = io.BytesIO(audio_data)
     audio_segment = AudioSegment.from_file(audio_file, format='ogg')
-    file_name = "/tmp/temp_transcription_audio" + \
+    file_name = "/tmp/temp_transcription_audio/" + \
             datetime.now().strftime('%Y-%m-%d-%H%M%S')
     output_file = f'{file_name}.mp3'
     audio_segment.export(output_file, format='mp3')

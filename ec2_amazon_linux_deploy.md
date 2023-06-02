@@ -524,3 +524,15 @@ sudo systemctl status celeryd
 ```
 cat /var/log/celery/worker1.log
 ```
+
+Cronjobs
+-----------------------------------------
+Cronjob that removes all files from /tmp/temp_transcription_audio every 30 minutes,
+1. instrall cron
+```
+sudo yum install cronie
+```
+2. `crontab -e`
+```
+*/30 * * * * find /tmp/temp_transcription_audio/ -type f -mmin +3 -delete
+```
