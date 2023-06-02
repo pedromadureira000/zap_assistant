@@ -18,6 +18,12 @@ sudo yum update
 sudo systemctl reboot
 ```
 
+# Install some usefull packages
+```
+sudo yum install curl --skip-broken
+sudo yum -y install htop
+```
+
 # Install Python 3.11 build tools
 ```
 sudo yum -y install epel-release  XXX Did not work
@@ -124,10 +130,6 @@ sudo yum -y install epel-release
 ```
 curl -o /etc/yum.repos.d/dperson-neovim-epel-7.repo https://copr.fedorainfracloud.org/coprs/dperson/neovim/repo/epel-7/dperson-neovim-epel-7.repo 
 sudo yum -y install neovim
-```
-* Install other packages
-```
-sudo yum install curl --skip-broken
 ```
 * copy .bashrc configs
 ```
@@ -367,6 +369,49 @@ Solving common errors
   ```
   sudo tail -F /var/log/nginx/error.log
   ```
+
+Install ffmpeg
+----------------------------------------
+1. SSH into your instance and become root
+```
+sudo su -
+```
+
+2. Go to the /usr/local/bin directory
+```
+cd /usr/local/bin
+```
+
+3. Inside the /usr/local/bin directory, create an ffmpeg directory and go inside it.
+```
+mkdir ffmpeg && cd ffmpeg
+```
+
+4. Download a static build of ffmpeg
+```
+wget https://johnvansickle.com/ffmpeg/releases/ffmpeg-release-amd64-static.tar.xz
+```
+
+5. Unzip the binaries
+This will create a folder named ffmpeg-4.2.1-amd64-static . Go inside this folder to check if ffmpeg has been installed successfully or not.
+```
+tar -xf ffmpeg-release-amd64-static.tar.xz
+cd ffmpeg-<version>-amd64-static
+./ffmpeg -version
+```
+
+6. Now we will move to the outer folder. 
+```
+cd ..
+cp -a /usr/local/bin/ffmpeg/ffmpeg-<version>-amd64-static/* /usr/local/bin/ffmpeg/
+```
+
+7. Create a symlink to use ffmpeg from any location
+Note: The first part /usr/local/bin/ffmpeg/ffmpeg is where the file is located after I untarred the file. The second part /usr/bin/ffmpeg is where we want the symlink to go
+```
+ln -s /usr/local/bin/ffmpeg/ffmpeg /usr/bin/ffmpeg
+ln -s /usr/local/bin/ffmpeg/ffprobe /usr/bin/ffprobe
+```
 
 Run celery
 -----------------------------------------
