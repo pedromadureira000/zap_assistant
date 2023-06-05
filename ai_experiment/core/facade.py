@@ -182,7 +182,8 @@ def start_trial(user_name, user_phone):
             name=user_name,
             whatsapp=user_phone,
         )
-        Conversation(user=user, agent=Agent.objects.get(name="nice_agent")).save()
-        mega_api_instance = MegaAPIInstance.objects.first()
+        mega_api_instance = MegaAPIInstance.objects.first() # XXX later it may be more than one
+        nice_agent = Agent.objects.get(name="nice_agent")
+        Conversation(user=user, mega_instance=mega_api_instance, agent=nice_agent).save()
         msg = "Olá! 😄 Sou um assistente virtual baseado no ChatGPT e estou muito animado para ajudá-lo com qualquer dúvida ou preocupação que você possa ter. Sinta-se à vontade para me perguntar qualquer coisa e farei o possível para fornecer respostas rápidas e precisas. Inicie uma conversa para explorar as incríveis capacidades do nosso Assistente Virtual no WhatsApp. Como posso ajudá-lo hoje? 🌟"
         mega_api_instance.send_text_message(user.whatsapp, msg)
