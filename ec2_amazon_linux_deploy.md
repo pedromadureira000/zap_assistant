@@ -37,9 +37,67 @@ gcc --version
 ```
 
 # Install OpenSSL 1.1
+<!-- ``` -->
+<!-- yum install openssl-devel -y -->
+<!-- ``` -->
+
+* Edit NGINX server name `sudo vim /etc/nginx/nginx.conf`
 ```
-yum install openssl-devel -y
+server_name _;
+server_name pedromadureira.xyz;
 ```
+* Check errors reload and checkit
+```
+nginx -t
+sudo systemctl reload nginx
+sudo systemctl status nginx
+```
+
+* This
+```
+sudo python3.11 -m venv /opt/certbot/
+sudo /opt/certbot/bin/pip install --upgrade pip
+sudo /opt/certbot/bin/pip install certbot certbot-nginx
+sudo ln -s /opt/certbot/bin/certbot /usr/bin/certbot
+```
+
+* this too
+```
+sudo certbot --nginx
+```
+
+* (_OPTIONAL_) It you need to generate it again for some reason (like forgot to set the server_name)
+```
+sudo certbot --nginx certonly -d DOMINIO.COM.BR
+```
+
+* OBS: 
+Aqui partimos do princípio que o domínio já está apontando para o IP do servidor e que o Firewall está configurado as portas 80 e 443 abertas
+Eu peguei a conf `/etc/nginx/conf.d/*.conf` e mandei para ``/etc/nginx/nginx.conf` dentro de http > server, que foi onde apareceu as 
+configuracoes do ssl do certbot
+* Just pasted it with the ssl configurations and commented the import
+```http:server 
+    location / {
+        #Bellow is the proxy_params
+        proxy_set_header Host $http_host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_pass http://unix:/run/gunicorn.sock;
+    }
+
+    location /static/ {
+        autoindex on;
+        alias /home/ec2-user/zap_assistant/staticfiles/;
+        #root /home/ec2-user/zap_assistant/staticfiles/;
+    }
+```
+
+* Restart
+```
+sudo systemctl restart nginx
+```
+
 
 # Install Python 3.11
 ```
