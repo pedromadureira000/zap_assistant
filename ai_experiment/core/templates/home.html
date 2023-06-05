@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>
+      Assistente de Whatsapp com ChatGPT
+    </title>
+    <style>
+      body {
+          font-family: Arial, sans-serif;
+          background-color: #f5f5f5;
+          margin: 0;
+          padding: 20px;
+      }
+
+      h1 {
+          color: #333;
+          text-align: center;
+      }
+
+      h2{
+          color: #333;
+          text-align: center;
+          margin-bottom: 50px;
+      }
+
+      p {
+          color: #666;
+          line-height: 1.5;
+          text-align: center;
+      }
+
+      h2 {
+          color: #333;
+          margin-top: 30px;
+      }
+
+      form {
+          max-width: 400px;
+          margin: 0 auto;
+      }
+
+      label {
+          display: block;
+          margin-bottom: 10px;
+          color: #333;
+          font-weight: bold;
+      }
+
+      input[type="tel"] {
+          width: 100%;
+          padding: 10px;
+          font-size: 16px;
+          border-radius: 5px;
+          border: 1px solid #ccc;
+      }
+
+      input[type="text"] {
+          width: 100%;
+          padding: 10px;
+          font-size: 16px;
+          border-radius: 5px;
+          border: 1px solid #ccc;
+      }
+
+
+      input[type="submit"] {
+          display: block;
+          width: 100%;
+          padding: 10px;
+          font-size: 16px;
+          background-color: #007bff;
+          color: #fff;
+          border: none;
+          border-radius: 5px;
+          cursor: pointer;
+      }
+
+      input[type="submit"]:hover {
+          background-color: #0056b3;
+      }
+
+      .error {
+        color: red;
+        font-weight: bold;
+      }
+    </style>
+</head>
+<body>
+    <h1>
+      <!-- Welcome to AI Whatsapp Assistant -->
+      Bem-vindo ao WhatsappGPT
+    </h1>
+    <p>
+        <!-- Start a conversation with our AI assistant on WhatsApp to get instant responses to your queries! -->
+        Inicie uma conversa com o ChatGPT no WhatsApp e obtenha respostas instantâneas às suas consultas!
+    </p>
+    <p>
+        <!-- Fill out the form below to receive a message from the AI on WhatsApp, and start a 30 days trial. -->
+        Preencha o formulário abaixo para iniciar um teste de 30 dias.
+    </p>
+    <h2>
+      <!-- Get Access to AI Whatsapp Assistant: -->
+      Obtenha acesso ao WhatsappGPT:
+    </h2>
+    <form action="" method="post">
+        <label for="name">
+          Nome:
+        </label>
+        <input type="text" id="name" name="name" required><br><br>
+        <!-- <label for="phone">Phone Number (Cod. País + DDD + Whatsapp):</label> -->
+        <label for="phone">
+          <!-- Phone Number: -->
+          Whatsapp <span style="font-size:13px;">(Cod. País + DDD + Whatsapp)</span>:
+        </label>
+        <input type="tel" id="phone" name="phone" required placeholder="556281243394"><br><br>
+        <input type="submit" value="Acessar">
+        {% if error %}
+          <span class="error">{{error}}</span>
+        {% endif %}
+    </form>
+</body>
+</html>

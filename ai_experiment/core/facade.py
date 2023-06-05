@@ -9,9 +9,10 @@ import sentry_sdk
 import openai
 from django.conf import settings
 from django.contrib.auth import get_user_model
+from django.db import transaction
 from pydub import AudioSegment
 
-from ai_experiment.core.models import Conversation
+from ai_experiment.core.models import Agent, Conversation
 from ai_experiment.mega_api.models import MegaAPIInstance
 #  from ai_experiment.core import constants
 #  import sentry_sdk
@@ -168,3 +169,20 @@ def send_completion_to_user_with_mega_api(user, mega_api_instance_phone, complet
     #  txt_msg = get_msg_from_json_completion(json_string) # XXX not working consistently
     txt_msg = json_string
     mega_api_instance.send_text_message(user.whatsapp, txt_msg)
+
+
+def start_trial(user_name, user_phone):
+    if len(user_phone) < 12 or len(user_phone) > 13:
+        raise Exception("Phone number is not between 12 and 13")
+    if not '5562' in user_phone:
+        raise Exception("Phone number does not start with '5562'")
+    with transaction.atomic():
+        user_model = get_user_model()
+        user = user_model.objects.create_user(
+            name=user_name,
+            whatsapp=user_phone,
+        )
+        Conversation(user=user, agent=Agent.objects.get(name="nice_agent")).save()
+        mega_api_instance = MegaAPIInstance.objects.first()
+        msg = "Olá! 😄 Sou um assistente virtual baseado no ChatGPT e estou muito animado para ajudá-lo com qualquer dúvida ou preocupação que você possa ter. Sinta-se à vontade para me perguntar qualquer coisa e farei o possível para fornecer respostas rápidas e precisas. Inicie uma conversa para explorar as incríveis capacidades do nosso Assistente Virtual no WhatsApp. Como posso ajudá-lo hoje? 🌟"
+        mega_api_instance.send_text_message(user.whatsapp, msg)

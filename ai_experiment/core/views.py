@@ -4,14 +4,30 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from django.conf import settings
+from django.shortcuts import render
 from rest_framework import status, permissions
 from ai_experiment.core.constants import WEBHOOK_SERIALIZERS
 
-from ai_experiment.core.facade import add_completion_to_conversation, get_chat_completion, get_or_create_conversation_by_agent, get_transcription_with_in_memory_file
+from ai_experiment.core.facade import add_completion_to_conversation, get_chat_completion, get_or_create_conversation_by_agent, get_transcription_with_in_memory_file, start_trial
 from ai_experiment.core.serializers import ConversationalAgentSerializer, FileUploadSerializer, ChatCompletionSerializer
 
 
 pp = pprint.PrettyPrinter(indent=4)
+
+
+@api_view(['GET', 'POST'])
+@permission_classes([permissions.AllowAny])
+def home(request):
+    if request.method == 'POST':
+        phone_number = request.POST.get("phone")
+        user_name = request.POST.get("name")
+        try:
+            start_trial(user_name, phone_number)
+        except Exception as er:
+            print(er)
+            return render(request, "home.html", {"error": "Algo deu errado. Tente novamente mais tarde"})
+        return render(request, "trial.html", {'phone_number': phone_number})
+    return render(request, "home.html")
 
 
 @api_view(['POST'])
