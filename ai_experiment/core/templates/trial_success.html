@@ -3,7 +3,11 @@
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>
-      Trial de 30 dias iniciado com sucesso!
+      {% if lang == "pt" %}
+        Trial de 30 dias iniciado com sucesso!
+      {% else %}
+        30-day trial started successfully!
+      {% endif %}
     </title>
     <style>
       body {
@@ -74,11 +78,18 @@
 </head>
 <body>
     <h1>
-      Trial de 30 dias iniciado com sucesso!
-    </title>
+      {% if lang == "pt" %}
+        Trial de 30 dias iniciado com sucesso!
+      {% else %}
+        30-day trial started successfully!
+      {% endif %}
     </h1>
     <p>
-      Seu trial de 30 dias foi iniciado com sucesso! Em breve você receberá uma mensagem no WhatsApp e poderá iniciar o teste.
+      {% if lang == "pt" %}
+        Seu trial de 30 dias foi iniciado com sucesso! Em breve você receberá uma mensagem no WhatsApp e poderá iniciar o teste.
+      {% else %}
+        Your 30-day trial has been successfully started! Soon you will receive a message on WhatsApp and you can start the test.
+      {% endif %}
     </p>
 </body>
 </html>

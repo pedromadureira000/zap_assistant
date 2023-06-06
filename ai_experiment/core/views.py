@@ -31,14 +31,15 @@ def home(request):
             if "Number not registered on WhatsApp" in str(er):
                 error_msg = "Número não cadastrado no WhatsApp" if language == 'pt' else "Number not registered on WhatsApp"
             return render(request, "home.html", {"error": error_msg, "lang": language})
-        return render(request, "trial_success.html", {'phone_number': phone_number, 'lang': language})
+        return render(request, "trial_success.html", {'lang': language})
     return render(request, "home.html", {"lang": language})
 
 
 @api_view(['GET'])
 @permission_classes([permissions.AllowAny])
 def trial_success(request):
-    return render(request, "trial_success.html")
+    language = 'pt' if 'pt-BR' in request.META.get('HTTP_ACCEPT_LANGUAGE') else 'en'
+    return render(request, "trial_success.html", {'lang': language})
 
 
 @api_view(['POST'])
