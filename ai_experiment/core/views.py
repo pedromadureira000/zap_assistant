@@ -26,7 +26,10 @@ def home(request):
             start_trial(user_name, phone_number)
         except Exception as er:
             print(er)
-            error_msg =  "Algo deu errado. Tente novamente mais tarde" if language == 'pt-BR' else "Something went wrong. Try again later"
+            error_msg =  "Algo deu errado. Tente novamente mais tarde" if language == 'pt' \
+                    else "Something went wrong. Try again later"
+            if "Number not registered on WhatsApp" in str(er):
+                error_msg = "Número não cadastrado no WhatsApp" if language == 'pt' else "Number not registered on WhatsApp"
             return render(request, "home.html", {"error": error_msg, "lang": language})
         return render(request, "trial_success.html", {'phone_number': phone_number, 'lang': language})
     return render(request, "home.html", {"lang": language})
