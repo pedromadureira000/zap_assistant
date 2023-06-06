@@ -40,4 +40,6 @@ def get_completion_and_send_to_user(self, user_id, user_txt_input, conversation_
             return "Done"
     except Exception as exc:
         sentry_sdk.capture_exception(exc)
+        conversation.processing_request = False
+        conversation.save()
         raise self.retry(exc=exc, countdown=60, max_retries=2)
