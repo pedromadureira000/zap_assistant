@@ -27,6 +27,7 @@ class Conversation(Base):
         null=True
     )
     system_instruction = models.TextField("system instruction", blank=True)
+    processing_request = models.BooleanField(default=False)
 
     class Meta:
         unique_together = (("user", "mega_instance"),)

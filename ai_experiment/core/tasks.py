@@ -17,6 +17,8 @@ def get_completion_and_send_to_user(self, user_id, user_txt_input, conversation_
 
     user = UserModel.objects.get(id=user_id)
     conversation = Conversation.objects.get(id=conversation_id)
+    conversation.processing_request = True
+    conversation.save()
 
     try:
         with transaction.atomic():
@@ -33,6 +35,8 @@ def get_completion_and_send_to_user(self, user_id, user_txt_input, conversation_
                 mega_api_instance_phone,
                 completion
             )
+            conversation.processing_request = False
+            conversation.save()
             return "Done"
     except Exception as exc:
         sentry_sdk.capture_exception(exc)

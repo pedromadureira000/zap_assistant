@@ -101,6 +101,12 @@ class WebhookConversationSerializer(serializers.Serializer):
             user_txt_input = parse_user_txt_input(
                 get_user_text_input(message, conversation)
             )
+            if conversation.processing_request:
+                #  err_msg = "Sorry, we are still processing your previous request. Please wait a few seconds and try again."
+                err_msg = "Desculpe, ainda estamos processando sua solicitação anterior. Por favor, aguarde alguns segundos e tente novamente."
+                mega_api_instance = MegaAPIInstance.objects.first()
+                if mega_api_instance:
+                    mega_api_instance.send_text_message(user.whatsapp, err_msg)
             get_completion_and_send_to_user.delay(
                 user.id,
                 user_txt_input,
