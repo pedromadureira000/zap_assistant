@@ -100,6 +100,8 @@ def add_completion_to_conversation(conversation, completion):
 
 
 def get_user(phone):
+    if len(phone) == 13:
+        phone = phone[0:4] + phone[5:]
     user_model = get_user_model()
     return user_model.objects.get(whatsapp=phone)
 
