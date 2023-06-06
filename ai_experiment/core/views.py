@@ -18,7 +18,7 @@ pp = pprint.PrettyPrinter(indent=4)
 @api_view(['GET', 'POST'])
 @permission_classes([permissions.AllowAny])
 def home(request):
-    language = 'pt' if 'pt-BR' in request.META.get('HTTP_ACCEPT_LANGUAGE') else 'en'
+    language = 'pt' if 'pt-BR' in request.META.get('HTTP_ACCEPT_LANGUAGE', 'pt-BR') else 'en'
     if request.method == 'POST':
         phone_number = request.POST.get("phone")
         user_name = request.POST.get("name")
@@ -38,7 +38,7 @@ def home(request):
 @api_view(['GET'])
 @permission_classes([permissions.AllowAny])
 def trial_success(request):
-    language = 'pt' if 'pt-BR' in request.META.get('HTTP_ACCEPT_LANGUAGE') else 'en'
+    language = 'pt' if 'pt-BR' in request.META.get('HTTP_ACCEPT_LANGUAGE', 'pt-BR') else 'en'
     return render(request, "trial_success.html", {'lang': language})
 
 
