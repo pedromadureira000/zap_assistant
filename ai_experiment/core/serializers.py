@@ -107,12 +107,13 @@ class WebhookConversationSerializer(serializers.Serializer):
                 mega_api_instance = MegaAPIInstance.objects.first()
                 if mega_api_instance:
                     mega_api_instance.send_text_message(user.whatsapp, err_msg)
-            get_completion_and_send_to_user.delay(
-                user.id,
-                user_txt_input,
-                conversation.id,
-                mega_api_instance_phone
-            )
+            else:
+                get_completion_and_send_to_user.delay(
+                    user.id,
+                    user_txt_input,
+                    conversation.id,
+                    mega_api_instance_phone
+                )
             return conversation
         except Exception as err:
             sentry_sdk.capture_exception(err)

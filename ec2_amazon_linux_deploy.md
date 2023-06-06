@@ -207,7 +207,7 @@ alias gl='git log --graph --abbrev-commit'
 alias gb='git branch'
 alias journal='journalctl -e'
 alias used_space='sudo du -h --max-depth=1 | sort -h'
-alias gup='cd zap_assistant && git pull && sudo systemctl restart gunicorn && cd .. && echo "Done"'
+alias gup='cd zap_assistant && git pull && sudo systemctl restart gunicorn && source .venv/bin/activate && python manage.py migrate && cd .. && echo "Done"'
 ```
 
 # Run Postgres
