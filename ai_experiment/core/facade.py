@@ -185,6 +185,9 @@ def start_trial(user_name, user_phone):
         raise Exception("Phone number does not start with '5562'")
     with transaction.atomic():
         user_model = get_user_model()
+        if len(user_phone) == 13:
+            user_phone = user_phone[0:4] + user_phone[5:]
+
         user = user_model.objects.create_user(
             name=user_name,
             whatsapp=user_phone,
