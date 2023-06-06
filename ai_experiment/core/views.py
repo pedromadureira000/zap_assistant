@@ -30,6 +30,12 @@ def home(request):
     return render(request, "home.html")
 
 
+@api_view(['GET'])
+@permission_classes([permissions.AllowAny])
+def trial_success(request):
+    return render(request, "trial_success.html")
+
+
 @api_view(['POST'])
 def audio_transcription(request):
     if not request.user.is_superuser:

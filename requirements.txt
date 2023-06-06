@@ -13,3 +13,4 @@ requests
 python-magic
 openai
 pydub
+stripe

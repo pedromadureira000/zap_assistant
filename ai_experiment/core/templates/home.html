@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>
       Assistente de Whatsapp com ChatGPT
     </title>
@@ -83,6 +84,20 @@
         color: red;
         font-weight: bold;
       }
+
+      /* Styles for desktop screens */
+      .form-container {
+        max-width: 500px;
+        margin: 0 auto;
+      }
+      
+      /* Styles for mobile screens */
+      @media only screen and (max-width: 600px) {
+        .form-container {
+          max-width: 100%;
+          padding: 0 20px;
+        }
+      }
     </style>
 </head>
 <body>
@@ -102,7 +117,7 @@
       <!-- Get Access to AI Whatsapp Assistant: -->
       Obtenha acesso ao WhatsappGPT:
     </h2>
-    <form action="" method="post">
+    <form action="" method="post" class="form-container">
         <label for="name">
           Nome:
         </label>
