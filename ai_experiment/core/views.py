@@ -26,7 +26,7 @@ def home(request):
         except Exception as er:
             print(er)
             return render(request, "home.html", {"error": "Algo deu errado. Tente novamente mais tarde"})
-        return render(request, "trial.html", {'phone_number': phone_number})
+        return render(request, "trial_success.html", {'phone_number': phone_number})
     return render(request, "home.html")
 
 
