@@ -6,6 +6,8 @@ from ai_experiment.core.facade import get_conversation_by_instance_phone, get_us
 
 from ai_experiment.core.models import Conversation
 from ai_experiment.core.tasks import get_completion_and_send_to_user
+from ai_experiment.mega_api.models import MegaAPIInstance
+
 
 class FileUploadSerializer(serializers.Serializer):
     file = serializers.FileField()
@@ -108,4 +110,12 @@ class WebhookConversationSerializer(serializers.Serializer):
             return conversation
         except Exception as err:
             sentry_sdk.capture_exception(err)
+            try:
+                mega_api_instance = MegaAPIInstance.objects.first()
+                if mega_api_instance:
+                    #  err_msg = "Sorry, we are having some problems with our servers. Please try again later."
+                    err_msg = "Desculpe, estamos tendo alguns problemas com nossos servidores. Por favor, tente novamente mais tarde."  # XXX fix it
+                    mega_api_instance.send_text_message(user.whatsapp, err_msg)
+            except Exception:
+                pass
             raise err
