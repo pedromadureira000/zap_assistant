@@ -18,6 +18,7 @@ pp = pprint.PrettyPrinter(indent=4)
 @api_view(['GET', 'POST'])
 @permission_classes([permissions.AllowAny])
 def home(request):
+    language = 'pt' if 'pt-BR' in request.META.get('HTTP_ACCEPT_LANGUAGE') else 'en'
     if request.method == 'POST':
         phone_number = request.POST.get("phone")
         user_name = request.POST.get("name")
@@ -25,9 +26,10 @@ def home(request):
             start_trial(user_name, phone_number)
         except Exception as er:
             print(er)
-            return render(request, "home.html", {"error": "Algo deu errado. Tente novamente mais tarde"})
-        return render(request, "trial_success.html", {'phone_number': phone_number})
-    return render(request, "home.html")
+            error_msg =  "Algo deu errado. Tente novamente mais tarde" if language == 'pt-BR' else "Something went wrong. Try again later"
+            return render(request, "home.html", {"error": error_msg, "lang": language})
+        return render(request, "trial_success.html", {'phone_number': phone_number, 'lang': language})
+    return render(request, "home.html", {"lang": language})
 
 
 @api_view(['GET'])

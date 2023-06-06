@@ -3,7 +3,11 @@
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>
-      Assistente de Whatsapp com ChatGPT
+      {% if lang == "pt" %}
+        Assistente de WhatsApp com ChatGPT
+      {% else %}
+        AI WhatsApp Assistant with ChatGPT
+      {% endif %}
     </title>
     <style>
       body {
@@ -102,36 +106,80 @@
 </head>
 <body>
     <h1>
-      <!-- Welcome to AI Whatsapp Assistant -->
-      Bem-vindo ao WhatsappGPT
+      {% if lang == "pt" %}
+        Bem-vindo ao WhatsAppGPT
+      {% else %}
+        Welcome to WhatsAppGPT
+      {% endif %}
     </h1>
     <p>
-        <!-- Start a conversation with our AI assistant on WhatsApp to get instant responses to your queries! -->
+      {% if lang == "pt" %}
         Inicie uma conversa com o ChatGPT no WhatsApp e obtenha respostas instantâneas às suas consultas!
+      {% else %}
+        Start a conversation with ChatGPT on WhatsApp to get instant responses to your queries!
+      {% endif %}
     </p>
     <p>
+      {% if lang == "pt" %}
         Você também pode enviar mensagens de áudio!
+      {% else %}
+        You can also send voice messages!
+      {% endif %}
     </p>
     <p>
-        <!-- Fill out the form below to receive a message from the AI on WhatsApp, and start a 30 days trial. -->
+      {% if lang == "pt" %}
         Preencha o formulário abaixo para iniciar um teste de 30 dias.
+      {% else %}
+        Fill the form below to start a 30-day trial.
+      {% endif %}
     </p>
     <h2>
-      <!-- Get Access to AI Whatsapp Assistant: -->
-      Obtenha acesso ao WhatsappGPT:
+      {% if lang == "pt" %}
+        Obtenha acesso ao WhatsAppGPT:
+      {% else %}
+        Get Access to WhatsAppGPT:
+      {% endif %}
     </h2>
     <form action="" method="post" class="form-container">
         <label for="name">
-          Nome:
+          {% if lang == "pt" %}
+            Nome:
+          {% else %}
+            Name:
+          {% endif %}
         </label>
         <input type="text" id="name" name="name" required><br><br>
-        <!-- <label for="phone">Phone Number (Cod. País + DDD + Whatsapp):</label> -->
-        <label for="phone">
-          <!-- Phone Number: -->
-          Whatsapp <span style="font-size:13px;">(Cod. País + DDD + Whatsapp)</span>:
-        </label>
-        <input type="tel" id="phone" name="phone" required placeholder="556281243394"><br><br>
-        <input type="submit" value="Acessar">
+        <!-- <label for="phone">Phone Number (Cod. País + DDD + WhatsApp):</label> -->
+        {% if lang == "pt" %}
+          <label for="phone">
+            WhatsApp
+            <span style="font-size:13px;">(Cod. País + DDD + WhatsApp)</span>:
+          </label>
+          <input 
+            type="tel" 
+            id="phone" 
+            name="phone" 
+            required 
+            placeholder="556281243394"
+          ><br><br>
+          <input type="submit" value="Acessar">
+        {% else %}
+          <label for="phone">
+            WhatsApp 
+            <span style="font-size:13px;">
+              (Country Code + Area Code + phone number)
+            </span>:
+          </label>
+          <input 
+            type="tel" 
+            id="phone" 
+            name="phone" 
+            required 
+            placeholder="15551234567"
+          ><br><br>
+          <input type="submit" value="Access">
+        {% endif %}
+
         {% if error %}
           <span class="error">{{error}}</span>
         {% endif %}
