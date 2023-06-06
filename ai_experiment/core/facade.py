@@ -181,8 +181,8 @@ def send_completion_to_user_with_mega_api(user, mega_api_instance_phone, complet
 def start_trial(user_name, user_phone):
     if len(user_phone) < 12 or len(user_phone) > 13:
         raise Exception("Phone number is not between 12 and 13")
-    if not '5562' in user_phone:
-        raise Exception("Phone number does not start with '5562'")
+    if not user_phone[0:2] == '55':
+        raise Exception("Phone number does not start with '55'")
     with transaction.atomic():
         user_model = get_user_model()
         if len(user_phone) == 13:
