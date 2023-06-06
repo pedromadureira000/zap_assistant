@@ -31,6 +31,8 @@ def invalid_day_of_month(day_of_month):
 def get_transcription_with_in_memory_file(in_memory_file):
     time_now = datetime.now().strftime('%Y-%m-%d-%H%M%S')
     temporary_audio_folder = "/tmp/temp_transcription_audio"
+    if not os.path.exists(temporary_audio_folder):
+        os.makedirs(temporary_audio_folder)
     temporary_file_path = temporary_audio_folder + f'/{time_now}.mp3'
     if not os.path.exists(temporary_audio_folder):
         os.makedirs(temporary_audio_folder)
@@ -145,7 +147,10 @@ def base64_to_file(base64_data):
     audio_data = base64.b64decode(sanitize_base64_string(base64_data))
     audio_file = io.BytesIO(audio_data)
     audio_segment = AudioSegment.from_file(audio_file, format='ogg')
-    file_name = "/tmp/temp_transcription_audio/" + \
+    temporary_audio_folder = "/tmp/temp_transcription_audio"
+    if not os.path.exists(temporary_audio_folder):
+        os.makedirs(temporary_audio_folder)
+    file_name = f"{temporary_audio_folder}/" + \
             datetime.now().strftime('%Y-%m-%d-%H%M%S')
     output_file = f'{file_name}.mp3'
     audio_segment.export(output_file, format='mp3')
