@@ -4,6 +4,7 @@ from django.utils import timezone
 from django.db import transaction
 from celery import shared_task
 import sentry_sdk
+from openai.error import RateLimitError
 
 from ai_experiment.core.facade import add_completion_to_conversation, get_chat_completion, send_completion_to_user_with_mega_api
 from ai_experiment.core.models import Conversation
@@ -41,6 +42,14 @@ def get_completion_and_send_to_user(self, user_id, user_txt_input, conversation_
             conversation.processing_request = False
             conversation.save()
             return "Done"
+    except RateLimitError:
+        err_msg_to_user = f"O servidor está sobrecarregado. Por favor, tente novamente mais tarde."
+        err_msg = f"RateLimitError processing request for user {user_id} at {now}"
+        mega_api_instance = MegaAPIInstance.objects.first()
+        mega_api_instance.send_text_message("556293378753", err_msg)
+        mega_api_instance.send_text_message(user.whatsapp, err_msg_to_user)
+        #  XXX block it somehow. Like with a flag
+        raise RateLimitError
     except Exception as exc:
         sentry_sdk.capture_exception(exc)
         countdown = randint(5, 15)
