@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html>
 <head>
@@ -9,6 +10,13 @@
         AI WhatsApp Assistant with ChatGPT
       {% endif %}
     </title>
+    <script type="application/javascript" src="{% static 'js/mask.js' %}"></script>
+    <script type="application/javascript" src="{% static 'js/mask_list.js' %}"></script>
+    <script>
+      setTimeout(() => {
+        mask('#phone');
+      }, 100);
+    </script>
     <style>
       body {
           font-family: Arial, sans-serif;
@@ -140,7 +148,7 @@
         Get Access to WhatsAppGPT:
       {% endif %}
     </h2>
-    <form action="" method="post" class="form-container">
+    <form action="" method="post" class="form-container" id="form">
         <label for="name">
           {% if lang == "pt" %}
             Nome:
@@ -149,7 +157,6 @@
           {% endif %}
         </label>
         <input type="text" id="name" name="name" required><br><br>
-        <!-- <label for="phone">Phone Number (Cod. País + DDD + WhatsApp):</label> -->
         {% if lang == "pt" %}
           <label for="phone">
             WhatsApp
