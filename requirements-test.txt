@@ -1,10 +1,4 @@
 -r requirements.txt
 
-model-bakery
-pytest
-pytest-django
-pytest-mock
-requests-mock
-responses
 ipython
 openai-whisper

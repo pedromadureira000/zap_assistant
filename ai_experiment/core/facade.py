@@ -193,3 +193,11 @@ def start_trial(user_name, user_phone):
         Conversation(user=user, mega_instance=mega_api_instance, agent=nice_agent).save()
         msg = "Olá! 😄 Sou um assistente virtual baseado no ChatGPT e estou muito animado para ajudá-lo com qualquer dúvida ou preocupação que você possa ter. Sinta-se à vontade para me perguntar qualquer coisa e farei o possível para fornecer respostas rápidas e precisas. Inicie uma conversa para explorar as incríveis capacidades do nosso Assistente Virtual no WhatsApp. Como posso ajudá-lo hoje? 🌟"
         mega_api_instance.send_text_message(user.whatsapp, msg)
+
+
+def validate_phone_number(phone, country_code="55"):
+    if len(phone) == 13:
+        phone = phone[0:4] + phone[5:]
+    if not phone.startswith("55"):
+        phone = "55" + phone
+    return phone

@@ -219,7 +219,7 @@ sudo docker-compose up -d
 # Connect to default database and create the database that you will use
 ```
 psql postgres://admin_zap:asdf@localhost:5432/postgres
-postgres=# create database zap_ass_db;
+postgres=# create database zap_agent_db;
 postgres=# \q
 ```
 
