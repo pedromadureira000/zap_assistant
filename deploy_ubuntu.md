@@ -1,7 +1,7 @@
 # connect ssh
 ``
 chmod 400 ~/.ssh/zap_ass.pem
-ssh -i ~/.ssh/zap_ass.pem ec2-user@<ip>
+ssh -i ~/.ssh/zap_ass.pem ubuntu@<ip>
 ``
 
 # Check system version
@@ -111,7 +111,334 @@ source .venv/bin/activate
 pip install --upgrade pip
 pip install -r requirements.txt
 cp contrib/env-sample .env
+vim .env
 python3.11 manage.py migrate
 python3.11 manage.py createsuperuser
 ``
 
+Create systemd socket for Gunicorn
+-----------------------------------------
+
+* Create the file with:
+
+```
+sudo vim /etc/systemd/system/gunicorn.socket
+```
+
+* Then copy this to that file
+
+```
+[Unit]
+Description=gunicorn socket
+
+[Socket]
+ListenStream=/run/gunicorn.sock
+
+[Install]
+WantedBy=sockets.target
+```
+
+Create systemd service for Gunicorn
+-----------------------------------------
+
+* Create the file with:
+
+```
+sudo vim /etc/systemd/system/gunicorn.service
+```
+
+* Then copy this to that file and edit the user field and working directory path
+
+```
+[Unit]
+Description=gunicorn daemon
+Requires=gunicorn.socket
+After=network.target
+
+[Service]
+User=ubuntu
+Group=ubuntu
+WorkingDirectory=/home/ubuntu/zap_assistant
+ExecStart=/home/ubuntu/zap_assistant/.venv/bin/gunicorn --access-logfile - --workers 3 --bind unix:/run/gunicorn.sock ai_experiment.wsgi:application
+
+[Install]
+WantedBy=multi-user.target
+```
+
+Start and enable the Gunicorn socket
+-----------------------------------------
+
+```
+sudo systemctl start gunicorn.socket
+sudo systemctl enable gunicorn.socket
+sudo systemctl status gunicorn.socket
+```
+
+Check the Gunicorn socket’s logs 
+-----------------------------------------
+
+```
+sudo journalctl -u gunicorn.socket
+```
+
+Test socket activation
+-----------------------------------------
+
+It will be dead. The gunicorn.service will not be active yet since the socket has not yet received any connections
+
+```
+sudo systemctl status gunicorn  
+```
+
+Test the socket activation
+-----------------------------------------
+
+It must return a html response
+
+```
+curl --unix-socket /run/gunicorn.sock localhost 
+```
+
+If you don't receive a html, check the logs. Check your /etc/systemd/system/gunicorn.service file for problems. If you make changes to the /etc/systemd/system/gunicorn.service file, reload the daemon to reread the service definition and restart the Gunicorn process:
+-----------------------------------------
+
+```
+sudo journalctl -u gunicorn
+sudo systemctl daemon-reload
+sudo systemctl restart gunicorn
+sudo systemctl status gunicorn
+```
+
+Configure Nginx to Proxy Pass to Gunicorn
+-----------------------------------------
+* Create the file
+
+```
+sudo nvim /etc/nginx/sites-available/zap_assistant
+```
+
+* Paste the nginx configuration code, and edit the sever name with your server IP.
+```
+server {
+        listen 80;
+        # Above is the server IP
+        server_name <your server ip>;
+
+        location = /favicon.ico { access_log off; log_not_found off; }
+
+        location / {
+                include proxy_params;
+                proxy_pass http://unix:/run/gunicorn.sock;
+        }
+
+        location /static/ {
+            autoindex on;
+            alias /home/ubuntu/zap_assistant/staticfiles/;
+	    }
+}
+```
+
+Enable the file by linking it to the sites-enabled directory:
+-----------------------------------------
+
+```
+sudo ln -s /etc/nginx/sites-available/zap_assistant /etc/nginx/sites-enabled
+```
+
+Test for syntax errors
+-----------------------------------------
+
+```
+sudo nginx -t
+```
+
+Restart nginx
+-----------------------------------------
+
+```
+sudo systemctl restart nginx
+```
+
+Firewall configurations
+-----------------------------------------
+```
+sudo ufw allow 'Nginx Full'
+```
+
+collectstatic
+-----------------------------------------
+```
+cd /home/ubuntu/zap_assistant
+python manage.py collectstatic
+sudo systemctl restart gunicorn
+```
+
+Nginx serve static file and got 403 forbidden Problem
+-----------------------------------------
+* add permission (first try)
+```
+sudo chown -R :www-data /home/ubuntu/zap_assistant/staticfiles
+```
+* add permission (second try)
+```
+sudo usermod -a -G ubuntu www-data  # (adds the user "nginx" to the "ubuntu" group without removing them from their existing groups)
+chmod 710 /home/ubuntu 
+```
+
+Test for syntax errors
+-----------------------------------------
+
+```
+sudo nginx -t
+```
+
+Restart nginx
+-----------------------------------------
+
+```
+sudo systemctl restart nginx
+sudo systemctl reload nginx
+sudo systemctl status nginx
+```
+
+Solving common errors
+----------------------------------------
+* Securit group
+ - Add port 80 there
+* ALLOWED_HOSTS (better set '\*' )
+* Nginx Is Displaying a 502 Bad Gateway Error Instead of the Django Application
+  - A 502 error indicates that Nginx is unable to successfully proxy the request. A wide range of configuration problems express themselves with a 502 error, so more information is required to troubleshoot properly.
+  - The primary place to look for more information is in Nginx’s error logs. Generally, this will tell you what conditions caused problems during the proxying event. Follow the Nginx error logs by typing:
+  ```
+  sudo tail -F /var/log/nginx/error.log
+  ```
+
+Install ffmpeg
+----------------------------------------
+```
+sudo apt install ffmpeg
+```
+
+Run redis
+-----------------------------------------
+## Manually
+```
+sudo docker ps -a
+sudo docker start 61 # if 61 is the redis id
+```
+## Daemonizing Redis container
+1. `sudo vim /etc/systemd/system/redis.service`
+```
+[Unit]
+Description=Redis container
+Requires=docker.service
+After=docker.service
+
+[Service]
+Restart=always
+ExecStart=/usr/bin/docker start -a zap_assistant-redis-1
+
+[Install]
+WantedBy=default.target
+```
+
+2. Reload it
+```
+sudo systemctl daemon-reload
+```
+
+3. Enable and start the Redis service:
+```
+sudo systemctl enable redis
+sudo systemctl start redis
+```
+4. check it
+```
+sudo systemctl status redis
+```
+
+Run celery
+-----------------------------------------
+## Just run it manualy
+```
+celery -A ai_experiment worker -l INFO --pool=gevent --concurrency=8 --hostname=worker -E --queues=send_completion_to_user &
+```
+
+## Daemonizing Celery with systemd
+https://ahmadalsajid.medium.com/daemonizing-celery-beat-with-systemd-97f1203e7b32
+
+1. We will create a /etc/default/celeryd configuration file.
+* `sudo nvim /etc/default/celeryd`
+```
+# The names of the workers. This example create one worker
+CELERYD_NODES="worker1"
+
+# The name of the Celery App, should be the same as the python file
+# where the Celery tasks are defined
+CELERY_APP="ai_experiment"
+
+# Log and PID directories
+CELERYD_LOG_FILE="/var/log/celery/%n%I.log"
+CELERYD_PID_FILE="/var/run/celery/%n.pid"
+
+# Log level
+CELERYD_LOG_LEVEL=INFO
+
+# Path to celery binary, that is in your virtual environment
+CELERY_BIN=/home/ubuntu/zap_assistant/.venv/bin/celery
+```
+
+2. Now, create another file for the worker 
+* `sudo nvim /etc/systemd/system/celeryd.service` with sudo privilege.
+```
+[Unit]
+Description=Celery Service
+After=network.target
+
+[Service]
+Type=forking
+User=ubuntu
+Group=ubuntu
+WorkingDirectory=/home/ubuntu/zap_assistant
+ExecStart=/home/ubuntu/zap_assistant/.venv/bin/celery -A ai_experiment worker -l INFO --pool=gevent --concurrency=8 --hostname=worker -E --queues=send_completion_to_user
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+```
+
+<!-- 3. Now, we will create log and pid directories. -->
+<!-- ``` -->
+<!-- sudo mkdir /var/log/celery /var/run/celery -->
+<!-- sudo chown ubuntu:ubuntu /var/log/celery /var/run/celery  -->
+<!-- ``` -->
+
+4. After that, we need to reload systemctl daemon. Remember that, we should reload this every time we make any change to the service definition file.
+```
+sudo systemctl daemon-reload
+sudo systemctl restart celeryd
+```
+
+5.  To enable the service to start at boot, we will run. And start the service
+```
+sudo systemctl enable celeryd
+sudo systemctl start celeryd
+sudo systemctl status celeryd
+```
+
+6. To verify that everything is ok, we can check the log files
+```
+cat /var/log/celery/worker1.log
+```
+
+Cronjobs
+-----------------------------------------
+Cronjob that removes all files from /tmp/temp_transcription_audio every 30 minutes,
+1. instrall cron
+```
+sudo yum install cronie
+```
+2. `crontab -e`
+```
+*/30 * * * * find /tmp/temp_transcription_audio/ -type f -mmin +3 -delete
+```
