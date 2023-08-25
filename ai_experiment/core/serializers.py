@@ -2,7 +2,7 @@ from rest_framework import serializers
 import magic
 import sentry_sdk
 
-from ai_experiment.core.facade import get_conversation_by_instance_phone, get_user, get_user_text_input, parse_user_txt_input
+from ai_experiment.core.facade import get_conversation_by_instance_phone, get_user_or_none_by_phone, get_user_text_input, parse_user_txt_input
 
 from ai_experiment.core.models import Conversation
 from ai_experiment.core.tasks import get_completion_and_send_to_user
@@ -73,7 +73,12 @@ class WebhookConversationSerializer(serializers.Serializer):
         return value
 
     def validate(self, attrs):
-        user = get_user(attrs['key']['remoteJid'].split('@')[0])
+        phone = attrs['key']['remoteJid'].split('@')[0]
+        user = get_user_or_none_by_phone(phone)
+        if not user:
+            # TODO send msg to register account to test the zap assistant
+            raise serializers.ValidationError("User not found by phone.")
+
         mega_api_instance_phone = attrs['jid'].split(':')[0]
         try:
             conversation = get_conversation_by_instance_phone(
@@ -90,9 +95,8 @@ class WebhookConversationSerializer(serializers.Serializer):
         return attrs
 
     def create(self, validated_data):
-        remoteJid = validated_data['key']['remoteJid']
-        phone = remoteJid.split('@')[0]
-        user = get_user(phone)
+        phone = validated_data['key']['remoteJid'].split('@')[0]
+        user = get_user_or_none_by_phone(phone)
         jid = validated_data['jid']
         mega_api_instance_phone = jid.split(':')[0]
         message = validated_data['message']
