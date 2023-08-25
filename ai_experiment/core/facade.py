@@ -99,9 +99,14 @@ def add_completion_to_conversation(conversation, completion):
     conversation.save()
 
 
-def get_user_or_none_by_phone(phone):
+def format_phone_for_mega_api(phone):
     if len(phone) == 13:
         phone = phone[0:4] + phone[5:]
+    return phone
+
+
+def get_user_or_none_by_phone(phone):
+    phone = format_phone_for_mega_api(phone)
     user_model = get_user_model()
     return user_model.objects.filter(whatsapp=phone).first()
 

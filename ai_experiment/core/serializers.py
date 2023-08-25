@@ -2,7 +2,7 @@ from rest_framework import serializers
 import magic
 import sentry_sdk
 
-from ai_experiment.core.facade import get_conversation_by_instance_phone, get_user_or_none_by_phone, get_user_text_input, parse_user_txt_input
+from ai_experiment.core.facade import format_phone_for_mega_api, get_conversation_by_instance_phone, get_user_or_none_by_phone, get_user_text_input, parse_user_txt_input
 
 from ai_experiment.core.models import Conversation
 from ai_experiment.core.tasks import get_completion_and_send_to_user
@@ -76,7 +76,11 @@ class WebhookConversationSerializer(serializers.Serializer):
         phone = attrs['key']['remoteJid'].split('@')[0]
         user = get_user_or_none_by_phone(phone)
         if not user:
-            # TODO send msg to register account to test the zap assistant
+            mega_api_instance = MegaAPIInstance.objects.first()
+            #  err_msg = f"A user with phone XYZ ..."
+            #  mega_api_instance.send_text_message("556293378753", err_msg)
+            err_msg_to_user = f"Você não tem permissão para acessar esse serviço. Por favor peça ao administrador para registrar sua conta."
+            mega_api_instance.send_text_message(format_phone_for_mega_api(phone), err_msg_to_user)
             raise serializers.ValidationError("User not found by phone.")
 
         mega_api_instance_phone = attrs['jid'].split(':')[0]
