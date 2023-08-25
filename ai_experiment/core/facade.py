@@ -206,3 +206,8 @@ def validate_phone_number(phone, country_code="55"):
     if not phone.startswith("55"):
         phone = "55" + phone
     return phone
+
+
+def get_instance_phone_from_jid(jid):
+    phone = jid.split(':')[0].split("@")[0]
+    return phone

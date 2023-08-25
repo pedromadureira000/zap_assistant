@@ -2,7 +2,7 @@ from rest_framework import serializers
 import magic
 import sentry_sdk
 
-from ai_experiment.core.facade import format_phone_for_mega_api, get_conversation_by_instance_phone, get_user_or_none_by_phone, get_user_text_input, parse_user_txt_input
+from ai_experiment.core.facade import format_phone_for_mega_api, get_conversation_by_instance_phone, get_instance_phone_from_jid, get_user_or_none_by_phone, get_user_text_input, parse_user_txt_input
 
 from ai_experiment.core.models import Conversation
 from ai_experiment.core.tasks import get_completion_and_send_to_user
@@ -77,13 +77,13 @@ class WebhookConversationSerializer(serializers.Serializer):
         user = get_user_or_none_by_phone(phone)
         if not user:
             mega_api_instance = MegaAPIInstance.objects.first()
-            #  err_msg = f"A user with phone XYZ ..."
-            #  mega_api_instance.send_text_message("556293378753", err_msg)
+            # TODO all send_text_message should be done by celery ( add a facade to send txt msgs )
             err_msg_to_user = f"Você não tem permissão para acessar esse serviço. Por favor peça ao administrador para registrar sua conta."
             mega_api_instance.send_text_message(format_phone_for_mega_api(phone), err_msg_to_user)
             raise serializers.ValidationError("User not found by phone.")
 
-        mega_api_instance_phone = attrs['jid'].split(':')[0]
+        mega_api_instance_phone = get_instance_phone_from_jid(attrs['jid'])
+
         try:
             conversation = get_conversation_by_instance_phone(
                 user, 
@@ -101,8 +101,7 @@ class WebhookConversationSerializer(serializers.Serializer):
     def create(self, validated_data):
         phone = validated_data['key']['remoteJid'].split('@')[0]
         user = get_user_or_none_by_phone(phone)
-        jid = validated_data['jid']
-        mega_api_instance_phone = jid.split(':')[0]
+        mega_api_instance_phone = get_instance_phone_from_jid(validated_data['jid'])
         message = validated_data['message']
         try:
             conversation = validated_data['conversation']
