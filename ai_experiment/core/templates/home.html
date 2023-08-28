@@ -110,44 +110,97 @@
           padding: 0 20px;
         }
       }
+
+      .container {
+        text-align: center;
+        display: flex;
+        justify-content: center;
+      }
+      .container p {
+        max-width: 55%
+      }
+
+      .links {
+        text-align: center;
+      }
+
+      .links a {
+        display: inline-block;
+        margin: 10px;
+        padding: 10px 20px;
+        text-decoration: none;
+        color: #fff; /* Link text color */
+        background-color: #0073e6; /* Link background color */
+        border-radius: 5px;
+        font-weight: bold;
+        transition: background-color 0.3s;
+      }
+
+      .links a:hover {
+        background-color: #005bbf; /* Link background color on hover */
+      }
     </style>
 </head>
 <body>
     <h1>
       {% if lang == "pt" %}
-        Bem-vindo ao WhatsAppGPT
+        Sobre mim
       {% else %}
-        Welcome to WhatsAppGPT
+        About me
       {% endif %}
     </h1>
-    <p>
+    <div class="container">
+      <p>
+        {% if lang == "pt" %}
+          Como desenvolvedor web full-stack, me especializei em criar aplicativos com Django e Vue. Minha experiência também se estende a servidores Linux e implantação de aplicativos com servidor Ubuntu. Estou familiarizado com os serviços da AWS, como EC2 e S3, e tenho experiência prática no desenvolvimento de soluções baseadas em microsserviços. Com mais de 4 anos de experiência em programação, tenho um histórico comprovado de entrega de código de alta qualidade e implementação de soluções robustas. Se você estiver interessado em discutir oportunidades em potencial, entre em contato.
+        {% else %}
+          As a full-stack web developer, I specialize in building applications with Django and Vue. My expertise also extends to Linux servers and deploying applications with Ubuntu server. I am familiar with AWS services like EC2 and S3 and have hands-on experience in developing microservices-based solutions. With over 4 years of experience in programming, I have a proven track record of delivering high-quality code and implementing robust solutions. If you're interested in discussing potential opportunities, please get in touch.
+        {% endif %}
+      </p>
+    </div>
+    <div class="container">
+      {% comment %} <h5>Links</h5><br> {% endcomment %}
+      <div class="links">
+        <a href="https://www.linkedin.com/in/ph-web-solutions/" target="_blank">LinkedIn</a>
+        <a href="https://github.com/pedromadureira000" target="_blank">GitHub</a>
+        <a href="https://api.whatsapp.com/send?phone=5562993378753" target="_blank">WhatsApp</a>
+      </div>
+    </div>
+
+    <h1>
       {% if lang == "pt" %}
-        Inicie uma conversa com o ChatGPT no WhatsApp e obtenha respostas instantâneas às suas consultas!
+        Assistente de WhatsApp
       {% else %}
-        Start a conversation with ChatGPT on WhatsApp to get instant responses to your queries!
+        WhatsApp Assistant
       {% endif %}
-    </p>
-    <p>
-      {% if lang == "pt" %}
-        Você também pode enviar mensagens de áudio!
-      {% else %}
-        You can also send voice messages!
-      {% endif %}
-    </p>
-    <p>
-      {% if lang == "pt" %}
-        Preencha o formulário abaixo para iniciar um teste de 30 dias.
-      {% else %}
-        Fill the form below to start a 30-day trial.
-      {% endif %}
-    </p>
-    <h2>
-      {% if lang == "pt" %}
-        Obtenha acesso ao WhatsAppGPT:
-      {% else %}
-        Get Access to WhatsAppGPT:
-      {% endif %}
-    </h2>
+    </h1>
+    <div class="container">
+      <p>
+        {% if lang == "pt" %}
+          Inicie uma conversa com o ChatGPT no WhatsApp e obtenha respostas instantâneas às suas consultas!
+        {% else %}
+          Start a conversation with ChatGPT on WhatsApp to get instant responses to your queries!
+        {% endif %}
+      </p>
+    </div>
+    <div class="container">
+      <p>
+        {% if lang == "pt" %}
+          Você também pode enviar mensagens de áudio!
+        {% else %}
+          You can also send voice messages!
+        {% endif %}
+      </p>
+    </div>
+    <div class="container">
+      <h4>
+        {% if lang == "pt" %}
+          Registre sua conta abaixo para testar o assistente de WhatsApp:
+        {% else %}
+          Register your account below to test the WhatsApp assistant:
+        {% endif %}
+      </h4>
+    </div>
     <form action="" method="post" class="form-container" id="form">
         <label for="name">
           {% if lang == "pt" %}
