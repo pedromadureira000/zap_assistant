@@ -480,7 +480,7 @@ sudo docker ps -a
 sudo docker start 61 # if 61 is the redis id
 ```
 ## Daemonizing Redis container
-1. `sudo vim /etc/systemd/system/redis.service`
+1. `sudo nvim /etc/systemd/system/redis.service`
 ```
 [Unit]
 Description=Redis container
@@ -489,11 +489,12 @@ After=docker.service
 
 [Service]
 Restart=always
-ExecStart=/usr/bin/docker start -a zap_assistant-redis-1
+ExecStart=/usr/bin/docker start -a zap_assistant_redis_1
 
 [Install]
 WantedBy=default.target
 ```
+* OBS: zap_assistant_redis_1 is the container label. You can check it with `sudo docker ps -a`
 
 2. Reload it
 ```
