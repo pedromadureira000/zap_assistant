@@ -17,7 +17,7 @@ sudo reboot
 
 # Install Python 3.11 build tools
 ```
-sudo apt install python3-pip python3-dev libpq-dev nginx curl
+sudo apt install python3-pip python3-dev libpq-dev nginx curl neovim
 ```
 
 # Confirm GCC version:
@@ -32,10 +32,7 @@ sudo apt install python3.11 python3.11-venv
 
 # Install docker and postgres client
 ```
-sudo apt install docker.io
-sudo apt install docker-compose
-sudo apt install postgresql-client-common
-sudo apt install postgresql-client-14
+sudo apt install docker.io docker-compose postgresql-client-common postgresql-client-14
 ```
 
 # Configure git
@@ -45,11 +42,18 @@ git config --global user.name "PedroS3"
 git config --global user.email "dev@pedromadureira.xyz"
 cd ~/.ssh
 ssh-keygen -t ed25519 -C "dev@pedromadureira.xyz"
-chmod  400 .ssh/ubuntu_server
-chmod  400 .ssh/ubuntu_server.pub
+chmod  400 ~/.ssh/ubuntu_server
+chmod  400 ~/.ssh/ubuntu_server.pub
 ```
 * Add public key to repository's Deploy-keys
+```
+cat ~/.ssh/ubuntu_server.pub
+```
 * Create .ssh/config
+```
+nvim ~/.ssh/config
+```
+* past it
 ```
 Host github-zap-ec2-hostname
 	HostName github.com
@@ -64,12 +68,9 @@ git clone git@github-zap-ec2-hostname:pedromadureira000/zap_assistant.git
 ```
 
 # Other configs
-* Install neovim
+* nvim .bashrc
 ```
-sudo apt install neovim
-```
-* vim .bashrc
-```
+# Aliases
 alias vim='nvim'
 alias la='ls -A'
 alias du='du -h --max-depth=1'
@@ -122,7 +123,7 @@ Create systemd socket for Gunicorn
 * Create the file with:
 
 ```
-sudo vim /etc/systemd/system/gunicorn.socket
+sudo nvim /etc/systemd/system/gunicorn.socket
 ```
 
 * Then copy this to that file
@@ -144,7 +145,7 @@ Create systemd service for Gunicorn
 * Create the file with:
 
 ```
-sudo vim /etc/systemd/system/gunicorn.service
+sudo nvim /etc/systemd/system/gunicorn.service
 ```
 
 * Then copy this to that file and edit the user field and working directory path
@@ -222,7 +223,7 @@ sudo nvim /etc/nginx/sites-available/zap_assistant
 server {
         listen 80;
         # Above is the server IP
-        server_name <your server ip>;
+        server_name <your server ip or domain>;
 
         location = /favicon.ico { access_log off; log_not_found off; }
 
@@ -259,12 +260,6 @@ Restart nginx
 sudo systemctl restart nginx
 ```
 
-Firewall configurations
------------------------------------------
-```
-sudo ufw allow 'Nginx Full'
-```
-
 collectstatic
 -----------------------------------------
 ```
@@ -283,13 +278,6 @@ sudo chown -R :www-data /home/ubuntu/zap_assistant/staticfiles
 ```
 sudo usermod -a -G ubuntu www-data  # (adds the user "nginx" to the "ubuntu" group without removing them from their existing groups)
 chmod 710 /home/ubuntu 
-```
-
-Test for syntax errors
------------------------------------------
-
-```
-sudo nginx -t
 ```
 
 Restart nginx
@@ -447,5 +435,52 @@ sudo yum install cronie
 */30 * * * * find /tmp/temp_transcription_audio/ -type f -mmin +3 -delete
 ```
 
-# Install SSL
+Install SSL (22-04)
+-----------------------------------------
+*OBS: Don't use UFW (You might lost SSH access 💀💀💀)*
 
+* https://saturncloud.io/blog/recovering-ssh-access-to-amazon-ec2-instance-after-accidental-ufw-firewall-activation/
+https://www.digitalocean.com/community/tutorials/how-to-secure-nginx-with-let-s-encrypt-on-ubuntu-22-04
+
+## Checking stuff
+* Check ubuntu version
+```
+lsb_release -a
+```
+* check ALLOWED_HOSTS on settings.py
+* Check server_name on nginx config file
+
+## Installing Certbot 
+* make sure your snapd core is up to date
+```
+sudo snap install core; sudo snap refresh core
+```
+* Make sure certbot is in the correct version
+```
+sudo apt remove certbot
+sudo snap install --classic certbot
+```
+
+## adding this (not sure if it's neeeded or not)
+```
+        location ^~ /.well-known/acme-challenge/ {
+                allow all;
+                alias /var/www/html/.well-known/acme-challenge/;
+        }
+```
+
+## Point the A register from your domain to ec2 instance IP
+
+## Delete any AAAA register, becouse certbot will try to use it instead of A @ register
+
+## Obtaining an SSL Certificate
+* run it (with nginx plugin)
+```
+sudo certbot --nginx -d pedromadureira.xyz
+```
+
+## Verifying Certbot Auto-Renewal
+```
+sudo systemctl status snap.certbot.renew.service
+sudo certbot renew --dry-run
+```
