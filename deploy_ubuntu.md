@@ -484,3 +484,10 @@ sudo certbot --nginx -d pedromadureira.xyz
 sudo systemctl status snap.certbot.renew.service
 sudo certbot renew --dry-run
 ```
+
+Next steps
+-----------------------------------------
+* update webhook on https://mega-api-painel.app.br/
+```
+https://pedromadureira.xyz/webhook/<uuid-like-code>
+```
