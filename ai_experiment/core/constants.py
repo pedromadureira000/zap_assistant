@@ -36,3 +36,20 @@ JSON_FORMAT_INSTRUCTION = "You will only provide a RFC8259 compliant" + \
 }
 ```
 """
+
+CHATGPT_FUNCTIONS = [
+        {
+            "name": "answer_in_audio",
+            "description": "If asked to answer in audio this function will be called.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "txt_completion": {
+                        "type": "string",
+                        "description": "The text completion",
+                    },
+                },
+                "required": ["txt_completion"],
+            },
+        }
+    ]

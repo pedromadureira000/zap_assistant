@@ -26,7 +26,7 @@ sudo yum -y install htop
 
 # Install Python 3.11 build tools
 ```
-sudo yum -y install epel-release  XXX Did not work
+sudo yum -y install epel-release  # Did not work
 sudo yum install wget make cmake gcc bzip2-devel libffi-devel zlib-devel
 sudo yum -y groupinstall "Development Tools"
 ```
@@ -207,7 +207,7 @@ alias gl='git log --graph --abbrev-commit'
 alias gb='git branch'
 alias journal='journalctl -e'
 alias used_space='sudo du -h --max-depth=1 | sort -h'
-alias gup='cd zap_assistant && git pull && sudo systemctl restart gunicorn && source .venv/bin/activate && python manage.py migrate && cd .. && echo "Done"'
+alias gup='cd zap_assistant && git pull && source .venv/bin/activate && python manage.py migrate && python manage.py collectstatic && cd .. && sudo systemctl restart gunicorn && sudo systemctl restart celeryd && echo "Done"'
 ```
 
 # Run Postgres

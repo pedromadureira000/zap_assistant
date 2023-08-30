@@ -14,7 +14,7 @@ from pydub import AudioSegment
 
 from ai_experiment.core.models import Agent, Conversation
 from ai_experiment.mega_api.models import MegaAPIInstance
-#  from ai_experiment.core import constants
+from ai_experiment.core import constants
 #  import sentry_sdk
 
 
@@ -54,11 +54,20 @@ def get_transcription_with_file_path(temporary_file_path):
     return transcript["text"]
 
 
+def get_content_from_completion(msg):
+    # It's either 'content' or 'function_call' right?
+    if msg["content"]:
+        return msg["content"]
+    else:
+        args = json.loads(msg["function_call"]["arguments"])
+        return  args["txt_completion"]
+
+
 def get_chat_completion(messages, user, system_instruction):
     if settings.OPENAI_API_MOCK:
         return [{"message": {"role": "assistant", "content": "Mocked response"}}]
     messages_payload = [
-        {"role": ord_dict["role"], "content": ord_dict["content"]} for ord_dict in messages
+        {"role": msg["role"], "content": get_content_from_completion(msg) } for msg in messages
     ]
     messages_payload = messages_payload[-10:] # XXX Memory is limited to last 10
     messages_payload.insert(-1, ({"role": "system", "content": system_instruction}))
@@ -66,8 +75,10 @@ def get_chat_completion(messages, user, system_instruction):
     openai.api_key = settings.OPENAI_API_KEY
     completion = openai.ChatCompletion.create(
         user=str(user.id),
-        model="gpt-3.5-turbo",
+        model="gpt-3.5-turbo-0613",
         messages=messages_payload,
+        functions=constants.CHATGPT_FUNCTIONS,
+        function_call="auto",  # auto is default, but we'll be explicit
         max_tokens=922,
         #  temperature=0.7 # default is 1
         #  request_id=request_id
@@ -162,13 +173,10 @@ def get_msg_from_json_completion(json_string):
         return json_string # TODO Heuristic or try to parse with openai
 
 
-def send_completion_to_user_with_mega_api(user, mega_api_instance_phone, completion):
+def send_completion_to_user_with_mega_api(user, mega_api_instance_phone,
+                                          txt_completion, audio_response=False):
     mega_api_instance = MegaAPIInstance.objects.get(phone=mega_api_instance_phone)
-    json_string = completion[0]["message"]["content"]
-    #  txt_msg, commands = get_msg_from_json_completion(json_string) # XXX parse json
-    # if 'audio_answer' in commands: # XXX create audio file
-    txt_msg = json_string
-    mega_api_instance.send_text_message(user.whatsapp, txt_msg)
+    mega_api_instance.send_text_message(user.whatsapp, txt_completion)
 
 
 def start_trial(user_name, user_phone):
@@ -199,3 +207,8 @@ def validate_phone_number(phone, country_code="55"):
 def get_instance_phone_from_jid(jid):
     phone = jid.split(':')[0].split("@")[0]
     return phone
+
+
+def answer_in_audio(txt_completion):
+    print('========================> txt_completion: ',txt_completion )
+    return 'audio'
