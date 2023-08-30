@@ -31,6 +31,11 @@ class Conversation(Base):
     class Meta:
         unique_together = (("user", "mega_instance"),)
 
+    def save(self, *args, **kwargs):
+        if self.agent != Conversation.objects.get(id=self.id).agent:
+            self.messages = []
+        super().save(*args, **kwargs)
+
 
 class Agent(Base):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
