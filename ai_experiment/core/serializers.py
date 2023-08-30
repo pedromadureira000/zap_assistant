@@ -9,7 +9,7 @@ from ai_experiment.core.tasks import get_completion_and_send_to_user
 from ai_experiment.mega_api.models import MegaAPIInstance
 
 
-class FileUploadSerializer(serializers.Serializer):
+class FileUploadSerializer(serializers.Serializer): # Not being used
     file = serializers.FileField()
 
     def validate_file(self, value):
@@ -33,24 +33,6 @@ class MessagesSerializer(serializers.Serializer):
         if not value:
             raise serializers.ValidationError("The content must not be empty.")
         return value
-
-
-class ChatCompletionSerializer(serializers.Serializer):
-    messages = MessagesSerializer(many=True)
-    system_instruction = serializers.CharField()
-
-
-class ConversationalAgentSerializer(serializers.Serializer):
-    user_input = serializers.CharField()
-    agent = serializers.CharField()
-
-    def validate_agent(self, value):
-        from ai_experiment.core.models import Agent
-        try:
-            agent = Agent.objects.get(name=value)
-        except Agent.DoesNotExist:
-            raise serializers.ValidationError("The agent does not exist.")
-        return agent
 
 
 class WebhookConversationSerializer(serializers.Serializer):

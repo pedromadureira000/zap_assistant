@@ -30,7 +30,7 @@ def get_completion_and_send_to_user(self, user_id, user_txt_input, conversation_
             completion = get_chat_completion(
                 conversation.messages,
                 user,
-                conversation.system_instruction
+                conversation.agent.system_instruction
             )
             print('========================> completion: ',completion )
             add_completion_to_conversation(conversation, completion)

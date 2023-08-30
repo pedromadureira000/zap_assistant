@@ -26,25 +26,17 @@ class Conversation(Base):
         blank=True,
         null=True
     )
-    system_instruction = models.TextField("system instruction", blank=True)
     processing_request = models.BooleanField(default=False)
 
     class Meta:
         unique_together = (("user", "mega_instance"),)
-
-    def save(self, *args, **kwargs):
-        if not self.pk or not self.messages:
-            self.system_instruction = self.agent.initial_instruction + \
-                ''
-                #  JSON_FORMAT_INSTRUCTION
-        super(Conversation, self).save(*args, **kwargs)
 
 
 class Agent(Base):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField("Nome", max_length=255, unique=True)
     description = models.TextField("Descrição", blank=True)
-    initial_instruction = models.TextField("initial instruction")
+    system_instruction = models.TextField("system instruction")
 
     def __str__(self):
         return self.name

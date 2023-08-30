@@ -28,7 +28,7 @@ def invalid_day_of_month(day_of_month):
 
 
 # XXX what does `fp32 used instead` mean?
-def get_transcription_with_in_memory_file(in_memory_file):
+def get_transcription_with_in_memory_file(in_memory_file): # Not used anymore
     time_now = datetime.now().strftime('%Y-%m-%d-%H%M%S')
     temporary_audio_folder = "/tmp/temp_transcription_audio"
     if not os.path.exists(temporary_audio_folder):
@@ -73,19 +73,6 @@ def get_chat_completion(messages, user, system_instruction):
         #  request_id=request_id
     )
     return completion.choices
-
-
-def get_or_create_conversation_by_agent(user, agent):
-    conversation, created = Conversation.objects.get_or_create(
-        user=user,
-        agent=agent,
-        mega_instance__instance_key=settings.MEGA_API_INSTANCE_KEY_TEST
-    )
-    if created:
-        conversation.messages.append(
-            {"role": "system", "content": agent.initial_instruction}
-        )
-    return conversation
 
 
 def get_conversation_by_instance_phone(user, instance_phone):
@@ -178,7 +165,8 @@ def get_msg_from_json_completion(json_string):
 def send_completion_to_user_with_mega_api(user, mega_api_instance_phone, completion):
     mega_api_instance = MegaAPIInstance.objects.get(phone=mega_api_instance_phone)
     json_string = completion[0]["message"]["content"]
-    #  txt_msg = get_msg_from_json_completion(json_string) # XXX not working consistently
+    #  txt_msg, commands = get_msg_from_json_completion(json_string) # XXX parse json
+    # if 'audio_answer' in commands: # XXX create audio file
     txt_msg = json_string
     mega_api_instance.send_text_message(user.whatsapp, txt_msg)
 

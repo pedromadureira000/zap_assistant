@@ -160,16 +160,15 @@ accept_content = ["application/json"]
 result_serializer = "json"
 timezone = TIME_ZONE
 
-SEND_CHECKIN_LINK__MAX_RETRIES = config("SEND_CHECKIN_LINK__MAX_RETRIES", default=2)
-SEND_CHECKIN_LINK__DEFAULT_RETRY_DELAY = config(
-    "SEND_CHECKIN_LINK__DEFAULT_RETRY_DELAY", default=1
-)
-
+# OPENAI API
 OPENAI_API_KEY = config("OPENAI_API_KEY")
 
 OPENAI_API_MOCK= config("OPENAI_API_MOCK", cast=bool, default=True)
 
 LOCAL_TRANSCRIPTION = config("LOCAL_TRANSCRIPTION", cast=bool, default=True)
+
+# ElevenLabs API
+ELEVENLABS_KEY = config("ELEVENLABS_KEY")
 
 # Mega API
 
