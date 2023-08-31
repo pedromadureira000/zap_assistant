@@ -86,7 +86,7 @@ alias gl='git log --graph --abbrev-commit'
 alias gb='git branch'
 alias journal='journalctl -e'
 alias used_space='sudo du -h --max-depth=1 | sort -h'
-alias gup='cd zap_assistant && git pull && source .venv/bin/activate && python manage.py migrate && python manage.py collectstatic && cd .. && sudo systemctl restart gunicorn && sudo systemctl restart celeryd && echo "Done"'
+alias gup='cd zap_assistant && git pull && source .venv/bin/activate && python manage.py migrate && python manage.py collectstatic --noinput && cd .. && sudo systemctl restart gunicorn && sudo systemctl restart celeryd && echo "Done"'
 ```
 
 # Run Postgres and Redis container
