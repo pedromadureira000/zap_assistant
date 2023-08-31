@@ -5,6 +5,7 @@ from decouple import config, Csv
 from dj_database_url import parse as dburl
 import sentry_sdk
 from sentry_sdk.integrations.django import DjangoIntegration
+from elevenlabs import set_api_key
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -169,6 +170,7 @@ LOCAL_TRANSCRIPTION = config("LOCAL_TRANSCRIPTION", cast=bool, default=True)
 
 # ElevenLabs API
 ELEVENLABS_KEY = config("ELEVENLABS_KEY")
+set_api_key(ELEVENLABS_KEY)
 
 # Mega API
 

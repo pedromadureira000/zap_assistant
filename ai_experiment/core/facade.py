@@ -14,7 +14,7 @@ from pydub import AudioSegment
 
 from ai_experiment.core.models import Agent, Conversation
 from ai_experiment.mega_api.models import MegaAPIInstance
-from ai_experiment.core import constants
+from elevenlabs import generate
 #  import sentry_sdk
 
 
@@ -64,6 +64,8 @@ def get_content_from_completion(msg):
 
 
 def get_chat_completion(messages, user, system_instruction):
+    from ai_experiment.core.constants import CHATGPT_FUNCTIONS # trying to solve circular import error
+
     if settings.OPENAI_API_MOCK:
         return [{"message": {"role": "assistant", "content": "Mocked response"}}]
     messages_payload = [
@@ -77,7 +79,7 @@ def get_chat_completion(messages, user, system_instruction):
         user=str(user.id),
         model="gpt-3.5-turbo-0613",
         messages=messages_payload,
-        functions=constants.CHATGPT_FUNCTIONS,
+        functions=CHATGPT_FUNCTIONS,
         function_call="auto",  # auto is default, but we'll be explicit
         max_tokens=922,
         #  temperature=0.7 # default is 1
@@ -173,10 +175,26 @@ def get_msg_from_json_completion(json_string):
         return json_string # TODO Heuristic or try to parse with openai
 
 
+def get_base64_audio_data_uri_from_txt(txt_completion):
+    audio = generate(
+        text=txt_completion,
+        voice="Liam",
+        model='eleven_multilingual_v2'
+    )
+    base64_bytes = base64.b64encode(audio)
+    base64_str = base64_bytes.decode('ascii')
+    base64audioDataURI = f"data:audio/mp3;base64,{base64_str}"
+    return base64audioDataURI
+
+
 def send_completion_to_user_with_mega_api(user, mega_api_instance_phone,
                                           txt_completion, audio_response=False):
     mega_api_instance = MegaAPIInstance.objects.get(phone=mega_api_instance_phone)
-    mega_api_instance.send_text_message(user.whatsapp, txt_completion)
+    if audio_response:
+        base64audioDataURI = get_base64_audio_data_uri_from_txt(txt_completion)
+        mega_api_instance.send_audio(user.whatsapp, base64audioDataURI)
+    else:
+        mega_api_instance.send_text_message(user.whatsapp, txt_completion)
 
 
 def start_trial(user_name, user_phone):
@@ -207,8 +225,3 @@ def validate_phone_number(phone, country_code="55"):
 def get_instance_phone_from_jid(jid):
     phone = jid.split(':')[0].split("@")[0]
     return phone
-
-
-def answer_in_audio(txt_completion):
-    print('========================> txt_completion: ',txt_completion )
-    return 'audio'

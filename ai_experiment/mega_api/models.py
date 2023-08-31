@@ -1,8 +1,8 @@
 import logging
 import requests
+from datetime import datetime
 
 from django.db import models
-import sentry_sdk
 
 
 log = logging.getLogger("mega")
@@ -94,6 +94,24 @@ class MegaAPIInstance(models.Model):
         }
         response = mega.request(
             "sendMessage/{instance_key}/text", method="POST", json=payload
+        )
+        return response
+
+    def send_audio(self, phone, base64audioDataURI):
+        time_now = datetime.now().strftime('%Y-%m-%d-%H%M%S')
+        mega = self._get_mega_instance()
+        payload = {
+            "messageData": {
+                "to": phone,
+                "base64": base64audioDataURI,
+                "fileName": f"11labsaudio-{time_now}.mp3",
+                "type": "audio",
+                "caption": "caption",
+                "mimeType": "audio/mp3"
+            }
+        }
+        response = mega.request(
+            "sendMessage/{instance_key}/mediaBase64", method="POST", json=payload
         )
         return response
 
