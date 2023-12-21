@@ -1,3 +1,8 @@
+# Zap Assistant
+
+Allows the user to chat with ChatGPT via WhatsApp, being able to send audios and receive audio responses. The project consists of an integration of Whatsapp API with ChatGPT, ElevenLabs and Whisper.
+
+
 ```bash
 git clone git@github.com:pedromadureira000/ai_experiment.git
 cd ai_experiment
